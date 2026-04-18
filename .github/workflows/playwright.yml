@@ -22,11 +22,8 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      # Tiếp tục chạy các matrix jobs khác dù một job thất bại
       fail-fast: false
       matrix:
-        # ── Unauthenticated projects chạy song song (register/login/cart) ──
-        # ── Authenticated :auth projects chạy song song (checkout) ──────────
         project:
           - chromium
           - firefox
@@ -50,7 +47,6 @@ jobs:
         run: npx playwright install --with-deps
 
       # ── Setup project (tạo auth state) chạy trước các :auth jobs ───────────
-      # Chỉ chạy setup khi cần (các :auth projects phụ thuộc vào auth.json)
       - name: Run auth setup (required for :auth projects)
         if: contains(matrix.project, ':auth')
         run: npx playwright test --project=setup
@@ -71,16 +67,29 @@ jobs:
 
       # ── Xử lý tên Artifact để tránh lỗi ký tự đặc biệt (dấu hai chấm) ──────
       - name: Sanitize Artifact Name
-        if: ${{ !cancelled() }}
+        if: always() # Chạy kể cả khi test fail để các bước sau lấy được SAFE_NAME
         run: |
           SAFE_NAME="${{ matrix.project }}"
           SAFE_NAME="${SAFE_NAME//:/-}"
           echo "SAFE_NAME=$SAFE_NAME" >> $GITHUB_ENV
 
+      # ── LƯU TRẠNG THÁI JOB (PASS/FAIL) ĐỂ VẼ BẢNG SUMMARY TẠI JOB SAU ──────
+      - name: Save Job Status
+        if: always()
+        run: echo "${{ job.status }}" > status-${{ env.SAFE_NAME }}.txt
+
+      - name: Upload Job Status
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: job-status-${{ env.SAFE_NAME }}
+          path: status-${{ env.SAFE_NAME }}.txt
+          retention-days: 1
+
       # ── Upload Playwright HTML report ────────────────────────────────────────
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+        if: always()
         with:
           name: playwright-report-${{ env.SAFE_NAME }}
           path: playwright-report/
@@ -89,7 +98,7 @@ jobs:
       # ── Upload Allure results (mỗi job upload riêng để merge sau) ────────────
       - name: Upload Allure Results
         uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+        if: always()
         with:
           name: allure-results-${{ env.SAFE_NAME }}
           path: allure-results/
@@ -105,7 +114,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Tải kết quả từ tất cả các matrix jobs về một thư mục chung
+      # Tải kết quả từ tất cả các matrix jobs
       - name: Download all Allure Results
         uses: actions/download-artifact@v4
         with:
@@ -113,7 +122,14 @@ jobs:
           path: allure-results-combined
           merge-multiple: true
 
-      # Lấy lại lịch sử các lần test trước (để vẽ biểu đồ xu hướng)
+      # Tải tất cả các file trạng thái (Pass/Fail) của matrix
+      - name: Download all Job Statuses
+        uses: actions/download-artifact@v4
+        with:
+          pattern: job-status-*
+          path: job-statuses
+          merge-multiple: true
+
       - name: Get Allure history
         uses: actions/checkout@v4
         continue-on-error: true
@@ -121,7 +137,6 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
-      # Sinh ra báo cáo Allure Report tổng hợp
       - name: Generate Allure Report
         uses: simple-elf/allure-report-action@master
         id: allure-report
@@ -130,7 +145,6 @@ jobs:
           allure_history: allure-history
           keep_reports: 20
 
-      # Deploy Dashboard lên GitHub Pages
       - name: Deploy report to Github Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -138,17 +152,31 @@ jobs:
           publish_branch: gh-pages
           publish_dir: allure-history
 
-      # Hiển thị link truy cập nhanh ngay trên trang Summary của GitHub
+      # ── KIỂM TRA TRẠNG THÁI & HIỂN THỊ BẢNG ĐỘNG ──────────────────────────────
       - name: Generate Job Summary
         run: |
-          echo "### Allure Report Đã Sẵn Sàng" >> $GITHUB_STEP_SUMMARY
-          echo "**[Bấm vào đây để xem Dashboard](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)**" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Báo Cáo Tự Động (Allure Report)" >> $GITHUB_STEP_SUMMARY
+          echo "**[👉 BẤM VÀO ĐÂY ĐỂ XEM DASHBOARD CHI TIẾT](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Browser Project | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| chromium | " >> $GITHUB_STEP_SUMMARY
-          echo "| firefox | " >> $GITHUB_STEP_SUMMARY
-          echo "| webkit | " >> $GITHUB_STEP_SUMMARY
-          echo "| chromium:auth | " >> $GITHUB_STEP_SUMMARY
-          echo "| firefox:auth | " >> $GITHUB_STEP_SUMMARY
-          echo "| webkit:auth | " >> $GITHUB_STEP_SUMMARY
+          echo "| 🌐 Trình duyệt / Môi trường | 🚥 Trạng thái |" >> $GITHUB_STEP_SUMMARY
+          echo "|:---|:---:|" >> $GITHUB_STEP_SUMMARY
+
+          # Danh sách các project (safe_name)
+          PROJECTS=("chromium" "firefox" "webkit" "chromium-auth" "firefox-auth" "webkit-auth")
+
+          for PROJ in "${PROJECTS[@]}"; do
+            DISPLAY_NAME="${PROJ//-/:}" # Khôi phục dấu ':' để hiển thị cho đẹp
+            
+            STATUS="N/A ⚠️"
+            if [ -f "job-statuses/status-$PROJ.txt" ]; then
+              RAW_STATUS=$(cat "job-statuses/status-$PROJ.txt")
+              if [ "$RAW_STATUS" == "success" ]; then
+                STATUS="**Pass** ✅"
+              elif [ "$RAW_STATUS" == "failure" ]; then
+                STATUS="**Fail** ❌"
+              elif [ "$RAW_STATUS" == "cancelled" ]; then
+                STATUS="**Cancelled** ⛔"
+              fi
+            fi
+            echo "| **$DISPLAY_NAME** | $STATUS |" >> $GITHUB_STEP_SUMMARY
+          done
