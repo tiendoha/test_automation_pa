@@ -1,0 +1,1 @@
+[PASS] TC-LOGIN-003: Should show error when logging in with non-existent email  (2026-04-18 08:27:16.750)

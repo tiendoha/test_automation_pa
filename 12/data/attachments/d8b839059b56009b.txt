@@ -1,0 +1,1 @@
+[PASS] TC-REG-002: Should show error when registering with an existing email  (2026-04-18 08:26:53.654)

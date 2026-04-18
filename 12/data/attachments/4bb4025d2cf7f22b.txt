@@ -1,0 +1,1 @@
+[PASS] TC-REG-001: Should register a new user account successfully  (2026-04-18 08:26:50.859)
