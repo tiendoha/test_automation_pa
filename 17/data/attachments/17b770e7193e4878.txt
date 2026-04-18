@@ -1,0 +1,4 @@
+[PASS] TC-REG-002: Should show error when registering with an existing email  (2026-04-18 10:38:41.208)
+[STEP] Gửi API xóa account: DELETE /api/deleteAccount cho email testuser_a5c95eab@mailtest.com
+[INFO] Account testuser_a5c95eab@mailtest.com đã được xóa thành công.
+[INFO] afterAll: existingUser đã được xóa qua API
