@@ -200,7 +200,7 @@ After every CI run, all Allure results from the 6 browser jobs are merged and au
 Alternatively, navigate directly to:
 
 ```
-https://<your-github-username>.github.io/<repository-name>/
+https://tiendoha.github.io/test_automation_pa/
 ```
 
 > **First-time setup:** GitHub Pages must be enabled on the repository before the report link works. Go to **Settings → Pages → Source** and set the branch to `gh-pages`. The `gh-pages` branch is created automatically after the first successful CI run.
