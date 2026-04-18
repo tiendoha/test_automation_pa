@@ -1,16 +1,11 @@
 import { test, expect } from '../../fixtures';
 import { generateUserData } from '../../data/register/user.data';
+import { logger } from '../../helpers/common/logger.helper';
 
 /**
  * Test Suite: User Registration
  * Feature: Register a new user account on automationexercise.com
  * Tech Stack: Playwright + TypeScript + Page Object Model + Fixtures
- *
- * Fixtures inject the following page objects automatically into each test:
- *  - homePage            → HomePage
- *  - signupLoginPage     → SignupLoginPage
- *  - registrationPage    → RegistrationPage
- *  - accountCreatedPage  → AccountCreatedPage
  */
 test.describe('User Registration', () => {
 
@@ -68,6 +63,8 @@ test.describe('User Registration', () => {
     // Step 10: Logout and verify redirect to login page
     await homePage.logout();
     await signupLoginPage.verifyPageLoaded();
+
+    logger.pass('TC-REG-001', 'Should register a new user account successfully');
   });
 
   /**
@@ -97,6 +94,7 @@ test.describe('User Registration', () => {
     // Step 3: Verify the error message is visible
     const errorMessage = page.getByText('Email Address already exist!');
     await expect(errorMessage).toBeVisible();
+
+    logger.pass('TC-REG-002', 'Should show error when registering with an existing email');
   });
 });
-

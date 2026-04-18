@@ -1,8 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
 
-/**
- * Page Object Model for the AutomationExercise Homepage.
- */
 export class HomePage {
   readonly page: Page;
 
@@ -24,15 +21,25 @@ export class HomePage {
    * Navigates to the homepage.
    */
   async navigate(): Promise<void> {
-    await this.page.goto('https://automationexercise.com/');
+    await this.page.goto('/');
   }
 
   /**
-   * Verifies the homepage is loaded correctly.
+   * Verifies the homepage is loaded (guest state — not logged in).
+   * Checks the URL and that the Signup/Login link is visible.
    */
   async verifyPageLoaded(): Promise<void> {
     await expect(this.page).toHaveURL('https://automationexercise.com/');
     await expect(this.signupLoginLink).toBeVisible();
+  }
+
+  /**
+   * Verifies the homepage is loaded after a successful login.
+   * Khi đã đăng nhập, navbar hiển thị Logout thay vì Signup/Login.
+   */
+  async verifyPageLoadedAsLoggedIn(): Promise<void> {
+    await expect(this.page).toHaveURL('https://automationexercise.com/');
+    await expect(this.logoutLink).toBeVisible();
   }
 
   /**

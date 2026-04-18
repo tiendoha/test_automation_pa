@@ -1,10 +1,6 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { UserRegistrationData } from '../../data/register/user.data';
 
-/**
- * Page Object Model for the Account Registration form page.
- * URL: https://automationexercise.com/signup
- */
 export class RegistrationPage {
   readonly page: Page;
 

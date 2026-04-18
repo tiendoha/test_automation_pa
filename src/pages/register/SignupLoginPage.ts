@@ -1,9 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
 
-/**
- * Page Object Model for the Signup / Login page.
- * URL: https://automationexercise.com/login
- */
 export class SignupLoginPage {
   readonly page: Page;
 

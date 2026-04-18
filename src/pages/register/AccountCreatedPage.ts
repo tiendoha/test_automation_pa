@@ -1,9 +1,6 @@
 import { Page, Locator, expect } from '@playwright/test';
 
-/**
- * Page Object Model for the Account Created confirmation page.
- * URL: https://automationexercise.com/account_created
- */
+
 export class AccountCreatedPage {
   readonly page: Page;
 
