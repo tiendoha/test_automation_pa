@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 import { PaymentCardData } from '../../data/checkout/checkout.data';
 
 /**
@@ -26,11 +26,10 @@ export class PaymentPage {
   }
 
   /**
-   * Verifies the payment page is loaded.
+   * Trả về Locator của URL hiện tại để assert bên ngoài
    */
-  async verifyPageLoaded(): Promise<void> {
-    await expect(this.page).toHaveURL(/.*payment/);
-    await expect(this.nameOnCardInput).toBeVisible();
+  getPageUrl(): string {
+    return this.page.url();
   }
 
   /**

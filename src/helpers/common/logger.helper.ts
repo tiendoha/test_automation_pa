@@ -29,34 +29,34 @@ export const logger = {
    */
   pass(testId: string, description?: string): void {
     const msg = description ? `${testId}: ${description}` : testId;
-    console.log(`${BOLD}${GREEN}[PASS] ✅ ${msg}${RESET}  ${CYAN}(${timestamp()})${RESET}`);
+    console.log(`${BOLD}${GREEN}[PASS] ${msg}${RESET}  ${CYAN}(${timestamp()})${RESET}`);
   },
 
   /**
    * In log thông tin chung trong quá trình chạy test.
    */
   info(message: string): void {
-    console.log(`${CYAN}[INFO] ℹ  ${message}${RESET}`);
+    console.log(`${CYAN}[INFO] ${message}${RESET}`);
   },
 
   /**
    * In log cho từng step đang thực thi.
    */
   step(message: string): void {
-    console.log(`${YELLOW}[STEP] ▶  ${message}${RESET}`);
+    console.log(`${YELLOW}[STEP] ${message}${RESET}`);
   },
 
   /**
    * In log khi một bước hoặc assertion FAIL (dùng trong debug).
    */
   fail(message: string): void {
-    console.log(`${RED}[FAIL] ❌ ${message}${RESET}`);
+    console.log(`${RED}[FAIL] ${message}${RESET}`);
   },
 
   /**
    * In log khi setup / teardown hoàn thành.
    */
   setup(message: string): void {
-    console.log(`${BOLD}${YELLOW}[SETUP] ⚙  ${message}${RESET}  ${CYAN}(${timestamp()})${RESET}`);
+    console.log(`${BOLD}${YELLOW}[SETUP] ${message}${RESET}  ${CYAN}(${timestamp()})${RESET}`);
   },
 };

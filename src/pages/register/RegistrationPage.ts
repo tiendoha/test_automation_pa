@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 import { UserRegistrationData } from '../../data/register/user.data';
 
 export class RegistrationPage {
@@ -65,11 +65,10 @@ export class RegistrationPage {
   }
 
   /**
-   * Verifies the registration form page is loaded.
+   * Trả về Locator của URL hiện tại để assert bên ngoài
    */
-  async verifyPageLoaded(): Promise<void> {
-    await expect(this.page).toHaveURL(/.*signup/);
-    await expect(this.registerHeading).toBeVisible();
+  getPageUrl(): string {
+    return this.page.url();
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 
 export class AccountCreatedPage {
@@ -16,12 +16,10 @@ export class AccountCreatedPage {
   }
 
   /**
-   * Verifies the account was successfully created.
+   * Trả về Locator của URL hiện tại để assert bên ngoài
    */
-  async verifyAccountCreated(): Promise<void> {
-    await expect(this.page).toHaveURL(/.*account_created/);
-    await expect(this.accountCreatedHeading).toBeVisible();
-    await expect(this.successMessage).toBeVisible();
+  getPageUrl(): string {
+    return this.page.url();
   }
 
   /**

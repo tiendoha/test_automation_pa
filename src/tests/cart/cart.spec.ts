@@ -35,6 +35,7 @@ test.describe('Add Product To Cart', () => {
    *  9.  Verify sản phẩm 2: Name ✓ | Price ✓ | Quantity ✓
    */
   test('TC-CART-001: Should add 2 products to cart and verify their details', async ({
+    page,
     productsPage,
     cartPage,
   }) => {
@@ -42,21 +43,33 @@ test.describe('Add Product To Cart', () => {
 
     // Step 1 & 2: Navigate to products page and verify it's loaded
     await productsPage.navigate();
-    await productsPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*products/);
+    await expect(productsPage.productsHeading).toBeVisible();
 
     // Step 3: Add first product → Continue Shopping (stay on products page)
     await productsPage.addProductToCartByIndex(0);
+    // User sees success modal
+    await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.continueShopping();
+    await expect(productsPage.modalSuccessText).toBeHidden();
 
     // Step 5: Add second product → View Cart via modal
     await productsPage.addProductToCartByIndex(1);
+    await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.goToCartViaModal();
 
     // Step 6: Verify cart page is loaded
-    await cartPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*view_cart/);
 
     // Steps 7–9: Verify count + each product's name, price, and quantity
-    await cartPage.verifyAllProductsInCart(CART_PRODUCTS);
+    await expect(cartPage.getCartRowsLocator()).toHaveCount(CART_PRODUCTS.length);
+    for (const product of CART_PRODUCTS) {
+      const locators = cartPage.getProductLocators(product.name);
+      await expect(locators.rowLocator).toBeVisible();
+      await expect(locators.nameLocator).toHaveText(product.name);
+      await expect(locators.priceLocator).toHaveText(product.price);
+      await expect(locators.quantityLocator).toHaveText(String(product.quantity));
+    }
 
     logger.pass('TC-CART-001', 'Should add 2 products to cart and verify their details');
   });
@@ -71,25 +84,34 @@ test.describe('Add Product To Cart', () => {
    *  4.  Verify cả 2 sản phẩm vẫn còn trong giỏ hàng
    */
   test('TC-CART-002: Cart should still contain products after navigating directly to cart', async ({
+    page,
     productsPage,
     cartPage,
   }) => {
     // Step 1: Add first product, continue shopping
     await productsPage.navigate();
-    await productsPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*products/);
+    await expect(productsPage.productsHeading).toBeVisible();
+    
     await productsPage.addProductToCartByIndex(0);
+    await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.continueShopping();
 
     // Step 2: Add second product, continue shopping
     await productsPage.addProductToCartByIndex(1);
+    await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.continueShopping();
 
     // Step 3: Navigate directly to cart page (no modal redirect)
     await cartPage.navigate();
-    await cartPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*view_cart/);
 
     // Step 4: Both products should still be in the cart
-    await cartPage.verifyAllProductsInCart(CART_PRODUCTS);
+    await expect(cartPage.getCartRowsLocator()).toHaveCount(CART_PRODUCTS.length);
+    for (const product of CART_PRODUCTS) {
+      const locators = cartPage.getProductLocators(product.name);
+      await expect(locators.rowLocator).toBeVisible();
+    }
 
     logger.pass('TC-CART-002', 'Cart should still contain products after navigating directly to cart');
   });

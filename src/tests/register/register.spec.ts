@@ -25,6 +25,7 @@ test.describe('User Registration', () => {
    *  10. Logout and verify redirect back to login page
    */
   test('TC-REG-001: Should register a new user account successfully', async ({
+    page,
     homePage,
     signupLoginPage,
     registrationPage,
@@ -34,35 +35,42 @@ test.describe('User Registration', () => {
 
     // Step 1: Open homepage and verify it is loaded
     await homePage.navigate();
-    await homePage.verifyPageLoaded();
+    await expect(page).toHaveURL('https://automationexercise.com/');
+    await expect(homePage.signupLoginLink).toBeVisible();
 
     // Step 2: Click Signup / Login link
     await homePage.clickSignupLogin();
 
     // Step 3: Verify Signup/Login page is shown
-    await signupLoginPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*login/);
+    await expect(signupLoginPage.signupHeading).toBeVisible();
+    await expect(signupLoginPage.loginHeading).toBeVisible();
 
     // Step 4: Enter name & email, click Signup button
     await signupLoginPage.signup(user.name, user.email);
 
     // Step 5: Verify the registration form page is displayed
-    await registrationPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*signup/);
+    await expect(registrationPage.registerHeading).toBeVisible();
 
     // Step 6: Fill in all registration details and submit
     await registrationPage.fillAndSubmitForm(user);
 
     // Step 7: Verify account creation success page
-    await accountCreatedPage.verifyAccountCreated();
+    await expect(page).toHaveURL(/.*account_created/);
+    await expect(accountCreatedPage.accountCreatedHeading).toBeVisible();
+    await expect(accountCreatedPage.successMessage).toBeVisible();
 
     // Step 8: Click Continue to go back to homepage
     await accountCreatedPage.clickContinue();
 
     // Step 9: Verify the user is now logged in
-    await homePage.verifyLoggedInAs(user.name);
+    await expect(homePage.loggedInAsLabel).toContainText(user.name);
 
     // Step 10: Logout and verify redirect to login page
     await homePage.logout();
-    await signupLoginPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*login/);
+    await expect(signupLoginPage.signupHeading).toBeVisible();
 
     logger.pass('TC-REG-001', 'Should register a new user account successfully');
   });
@@ -76,9 +84,9 @@ test.describe('User Registration', () => {
    *  3. Verify the error message "Email Address already exist!" is shown
    */
   test('TC-REG-002: Should show error when registering with an existing email', async ({
+    page,
     homePage,
     signupLoginPage,
-    page,
   }) => {
     const existingEmail = 'existing_user@example.com';
     const existingName = 'Existing User';
@@ -86,7 +94,8 @@ test.describe('User Registration', () => {
     // Step 1: Navigate to Signup/Login page
     await homePage.navigate();
     await homePage.clickSignupLogin();
-    await signupLoginPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*login/);
+    await expect(signupLoginPage.signupHeading).toBeVisible();
 
     // Step 2: Submit with an already-registered email
     await signupLoginPage.signup(existingName, existingEmail);

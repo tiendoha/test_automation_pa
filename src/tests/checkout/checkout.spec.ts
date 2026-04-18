@@ -3,23 +3,8 @@ import { ENV } from '../../configs/env.config';
 import { TEST_CARD, ORDER_COMMENT, CHECKOUT_PRODUCT_INDEXES } from '../../data/checkout/checkout.data';
 import { logger } from '../../helpers/common/logger.helper';
 
-/**
- * Test Suite: Checkout Flow — Buy Clothes
- * Feature: Login → Add product → Checkout → Verify Address → Place Order
- * URL: https://automationexercise.com
- * Tech Stack: Playwright + TypeScript + Page Object Model + Auth Setup
- *
- * Auth: Test sử dụng session đã được lưu bởi auth.setup.ts
- *       (không cần login thủ công trong mỗi test)
- *
- * Flow:
- *  [auth.setup.ts] Login với .env credentials → lưu session
- *  [TC-CHECKOUT-001] Load session → Add product → Cart → Checkout
- *                    → Verify delivery address → Place Order
- *                    → Payment → Verify "Order Placed!"
- */
 
-// ✅ Dùng session đã lưu bởi auth.setup.ts — không cần login lại
+// Dùng session đã lưu bởi auth.setup.ts — không cần login lại
 test.use({ storageState: ENV.authStatePath });
 
 test.describe('Checkout Flow: Buy Clothes', () => {
@@ -45,6 +30,7 @@ test.describe('Checkout Flow: Buy Clothes', () => {
    *  13. Verify "Order Placed!" và confirmation message
    */
   test('TC-CHECKOUT-001: Should complete full checkout flow successfully', async ({
+    page,
     homePage,
     productsPage,
     cartPage,
@@ -54,32 +40,38 @@ test.describe('Checkout Flow: Buy Clothes', () => {
   }) => {
     // Step 1: Verify user is logged in (session restored from auth state)
     await homePage.navigate();
-    await homePage.verifyPageLoadedAsLoggedIn();
-    await homePage.verifyLoggedInAs(ENV.testUsername);
+    await expect(page).toHaveURL('https://automationexercise.com/');
+    await expect(homePage.logoutLink).toBeVisible();
+    await expect(homePage.loggedInAsLabel).toContainText(ENV.testUsername);
 
     // Step 2: Navigate to products page
     await productsPage.navigate();
-    await productsPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*products/);
+    await expect(productsPage.productsHeading).toBeVisible();
 
     // Step 3: Add first product → Continue Shopping
     await productsPage.addProductToCartByIndex(CHECKOUT_PRODUCT_INDEXES[0]);
+    await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.continueShopping();
 
     // Step 3 cont: Add second product → View Cart via modal
     await productsPage.addProductToCartByIndex(CHECKOUT_PRODUCT_INDEXES[1]);
+    await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.goToCartViaModal();
 
     // Step 4: Verify cart page loaded
-    await cartPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*view_cart/);
 
     // Step 5: Proceed to checkout
     await cartPage.proceedToCheckout();
 
     // Step 6: Verify checkout page loaded
-    await checkoutPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*checkout/);
+    await expect(checkoutPage.deliveryAddressBlock).toBeVisible();
 
     // Step 7: Verify delivery address contains user's name (Mr./Mrs. + username)
-    await checkoutPage.verifyDeliveryAddress(ENV.testUsername);
+    await expect(checkoutPage.deliveryAddressBlock).toBeVisible();
+    await expect(checkoutPage.deliveryAddressName).toContainText(ENV.testUsername);
 
     // Step 8: Enter order comment
     await checkoutPage.enterOrderComment(ORDER_COMMENT);
@@ -88,7 +80,8 @@ test.describe('Checkout Flow: Buy Clothes', () => {
     await checkoutPage.placeOrder();
 
     // Step 10: Verify payment page loaded
-    await paymentPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*payment/);
+    await expect(paymentPage.nameOnCardInput).toBeVisible();
 
     // Step 11: Fill payment card details
     await paymentPage.fillPaymentDetails(TEST_CARD);
@@ -96,8 +89,10 @@ test.describe('Checkout Flow: Buy Clothes', () => {
     // Step 12: Confirm payment
     await paymentPage.confirmPayment();
 
-    // Step 13: ✅ Verify order placed successfully
-    await orderConfirmationPage.verifyOrderPlaced();
+    // Step 13: Verify order placed successfully
+    await expect(page).toHaveURL(/.*payment_done/);
+    await expect(orderConfirmationPage.orderPlacedHeading).toHaveText('Order Placed!');
+    await expect(orderConfirmationPage.confirmationMessage).toBeVisible();
 
     logger.pass('TC-CHECKOUT-001', 'Should complete full checkout flow successfully');
   });

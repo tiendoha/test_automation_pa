@@ -81,5 +81,5 @@ export const test = base.extend<PageFixtures>({
   },
 });
 
-// Re-export expect so tests only need one import source
-export { expect } from '@playwright/test';
+// Re-export expect and request so tests only need one import source
+export { expect, request } from '@playwright/test';

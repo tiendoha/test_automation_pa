@@ -1,5 +1,6 @@
-import { test, expect } from '../../fixtures';
+import { test, expect, request } from '../../fixtures';
 import { generateUserData, UserRegistrationData } from '../../data/register/user.data';
+import { createAccountViaAPI } from '../../helpers/api/auth.api.helper';
 import { INVALID_CREDENTIALS } from '../../data/login/login.data';
 import { HomePage } from '../../pages/register/HomePage';
 import { SignupLoginPage } from '../../pages/register/SignupLoginPage';
@@ -26,31 +27,20 @@ test.describe('User Login', () => {
    * SETUP: Chạy register flow một lần trước toàn bộ test suite.
    * Tạo account mới với email unique, sau đó logout để chuẩn bị cho login tests.
    */
-  test.beforeAll(async ({ browser }) => {
-    const page = await browser.newPage();
-
-    // Khởi tạo page objects thủ công vì beforeAll không có fixture injection
-    const homePage = new HomePage(page);
-    const signupLoginPage = new SignupLoginPage(page);
-    const registrationPage = new RegistrationPage(page);
-    const accountCreatedPage = new AccountCreatedPage(page);
-
+  test.beforeAll(async () => {
+    // Tạo API context thay vì browser context để chạy parallel độc lập và nhanh chóng
+    const apiContext = await request.newContext();
+    
     // Tạo data với email unique cho lần chạy này
     registeredUser = generateUserData();
 
-    // Chạy toàn bộ flow đăng ký
-    await homePage.navigate();
-    await homePage.clickSignupLogin();
-    await signupLoginPage.signup(registeredUser.name, registeredUser.email);
-    await registrationPage.fillAndSubmitForm(registeredUser);
-    await accountCreatedPage.verifyAccountCreated();
-    await accountCreatedPage.clickContinue();
+    // Call helper API account
+    await createAccountViaAPI(apiContext, registeredUser);
+    
+    // Đóng context
+    await apiContext.dispose();
 
-    // Sau khi register, hệ thống tự đăng nhập → logout để chuẩn bị login tests
-    await homePage.logout();
-
-    await page.close();
-    logger.setup('beforeAll: Account đã được tạo và sẵn sàng cho login tests');
+    logger.setup('beforeAll: Account đã được tạo qua API và sẵn sàng cho login tests');
   });
 
   /**
@@ -65,25 +55,28 @@ test.describe('User Login', () => {
    *  6. Logout và verify redirect về login page
    */
   test('TC-LOGIN-001: Should login successfully with the newly registered account', async ({
+    page,
     loginPage,
     homePage,
   }) => {
     // Step 1 & 2: Mở và verify login page
     await loginPage.navigate();
-    await loginPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*login/);
+    await expect(loginPage.loginHeading).toBeVisible();
 
     // Step 3: Đăng nhập bằng credentials của account vừa tạo trong beforeAll
     await loginPage.login(registeredUser.email, registeredUser.password);
 
     // Step 4: Verify redirect về homepage (trạng thái đã đăng nhập)
-    await homePage.verifyPageLoadedAsLoggedIn();
+    await expect(page).toHaveURL('https://automationexercise.com/');
+    await expect(homePage.logoutLink).toBeVisible();
 
     // Step 5: Verify username hiển thị đúng trên navbar
-    await homePage.verifyLoggedInAs(registeredUser.name);
+    await expect(homePage.loggedInAsLabel).toContainText(registeredUser.name);
 
     // Step 6: Logout và verify quay về login page
     await homePage.logout();
-    await loginPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*login/);
 
     logger.pass('TC-LOGIN-001', 'Should login successfully with the newly registered account');
   });
@@ -98,16 +91,17 @@ test.describe('User Login', () => {
    *  4. Verify user vẫn ở lại login page
    */
   test('TC-LOGIN-002: Should show error when logging in with incorrect password', async ({
+    page,
     loginPage,
   }) => {
     await loginPage.navigate();
-    await loginPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*login/);
 
     // Dùng email của account vừa tạo nhưng sai password
     await loginPage.login(registeredUser.email, INVALID_CREDENTIALS.wrongPassword.password);
 
-    await loginPage.verifyLoginError();
-    await loginPage.verifyPageLoaded();
+    await expect(loginPage.loginErrorMessage).toBeVisible();
+    await expect(page).toHaveURL(/.*login/);
 
     logger.pass('TC-LOGIN-002', 'Should show error when logging in with incorrect password');
   });
@@ -121,17 +115,18 @@ test.describe('User Login', () => {
    *  3. Verify error "Your email or password is incorrect!" hiển thị
    */
   test('TC-LOGIN-003: Should show error when logging in with non-existent email', async ({
+    page,
     loginPage,
   }) => {
     await loginPage.navigate();
-    await loginPage.verifyPageLoaded();
+    await expect(page).toHaveURL(/.*login/);
 
     await loginPage.login(
       INVALID_CREDENTIALS.nonExistentUser.email,
       INVALID_CREDENTIALS.nonExistentUser.password,
     );
 
-    await loginPage.verifyLoginError();
+    await expect(loginPage.loginErrorMessage).toBeVisible();
 
     logger.pass('TC-LOGIN-003', 'Should show error when logging in with non-existent email');
   });

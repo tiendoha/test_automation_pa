@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 export class LoginPage {
   readonly page: Page;
@@ -27,12 +27,10 @@ export class LoginPage {
   }
 
   /**
-   * Verifies the login page is loaded and the login form is visible.
+   * Trả về Locator của URL hiện tại để assert bên ngoài
    */
-  async verifyPageLoaded(): Promise<void> {
-    await expect(this.page).toHaveURL(/.*login/);
-    await expect(this.loginHeading).toBeVisible();
-    await expect(this.loginEmailInput).toBeVisible();
+  getPageUrl(): string {
+    return this.page.url();
   }
 
   /**
@@ -44,12 +42,5 @@ export class LoginPage {
     await this.loginEmailInput.fill(email);
     await this.loginPasswordInput.fill(password);
     await this.loginButton.click();
-  }
-
-  /**
-   * Verifies the error message is shown when login fails.
-   */
-  async verifyLoginError(): Promise<void> {
-    await expect(this.loginErrorMessage).toBeVisible();
   }
 }

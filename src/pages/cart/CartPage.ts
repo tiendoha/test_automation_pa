@@ -1,16 +1,9 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 import { ProductInfo } from '../../data/cart/cart.data';
 
 /**
  * Page Object Model for the Shopping Cart page.
  * URL: https://automationexercise.com/view_cart
- *
- * Cart table structure:
- *  tr[id^="product-"]
- *    td.cart_description  h4 a       → product name
- *    td.cart_price        p          → unit price  (e.g. "Rs. 500")
- *    td.cart_quantity     button     → quantity     (e.g. "1")
- *    td.cart_total        p.cart_total_price → total price
  */
 export class CartPage {
   readonly page: Page;
@@ -22,7 +15,6 @@ export class CartPage {
   constructor(page: Page) {
     this.page = page;
     this.cartHeading = page.getByRole('heading', { name: 'Shopping Cart' });
-    // Each product occupies one <tr> with id="product-{N}"
     this.cartRows = page.locator('tr[id^="product-"]');
     this.proceedToCheckoutButton = page.getByText('Proceed To Checkout');
   }
@@ -35,10 +27,10 @@ export class CartPage {
   }
 
   /**
-   * Verifies the cart page is loaded.
+   * Trả về Locator của URL hiện tại để assert bên ngoài
    */
-  async verifyPageLoaded(): Promise<void> {
-    await expect(this.page).toHaveURL(/.*view_cart/);
+  getPageUrl(): string {
+    return this.page.url();
   }
 
   /**
@@ -46,46 +38,30 @@ export class CartPage {
    * @param productName - The exact product name as shown on the site
    */
   getRowByProductName(productName: string): Locator {
+    // Tối ưu locator: Lọc row chứa link có tên sản phẩm thay vì path HTML cứng
     return this.cartRows.filter({
-      has: this.page.locator('td.cart_description h4 a', { hasText: productName }),
+      has: this.page.getByRole('link', { name: productName }),
     });
   }
 
   /**
-   * Verifies a product's name, unit price, and quantity in the cart.
-   * @param product - ProductInfo object from cart.data.ts
+   * Lấy các Locator cấu thành thông tin của Product để Assert bên bảng test
    */
-  async verifyProductInCart(product: ProductInfo): Promise<void> {
-    const row = this.getRowByProductName(product.name);
-
-    await expect(row).toBeVisible();
-
-    // Verify product name
-    const nameCell = row.locator('td.cart_description h4 a');
-    await expect(nameCell).toHaveText(product.name);
-
-    // Verify unit price
-    const priceCell = row.locator('td.cart_price p');
-    await expect(priceCell).toHaveText(product.price);
-
-    // Verify quantity
-    const quantityCell = row.locator('td.cart_quantity button');
-    await expect(quantityCell).toHaveText(String(product.quantity));
+  getProductLocators(productName: string) {
+    const row = this.getRowByProductName(productName);
+    return {
+      rowLocator: row,
+      nameLocator: row.locator('.cart_description').getByRole('link'),
+      priceLocator: row.locator('.cart_price p'),
+      quantityLocator: row.locator('.cart_quantity button'),
+    };
   }
 
   /**
-   * Verifies ALL products from a given list are present in the cart
-   * with correct name, price, and quantity.
-   * @param products - Array of ProductInfo to verify
+   * Returns total rows count
    */
-  async verifyAllProductsInCart(products: ProductInfo[]): Promise<void> {
-    // Verify the total number of rows matches
-    await expect(this.cartRows).toHaveCount(products.length);
-
-    // Verify each product individually
-    for (const product of products) {
-      await this.verifyProductInCart(product);
-    }
+  getCartRowsLocator(): Locator {
+    return this.cartRows;
   }
 
   /**

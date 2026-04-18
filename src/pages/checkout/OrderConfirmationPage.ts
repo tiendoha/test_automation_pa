@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 /**
  * Page Object Model for the Order Confirmation page.
@@ -22,12 +22,10 @@ export class OrderConfirmationPage {
   }
 
   /**
-   * Verifies the order was placed successfully.
+   * Trả về Locator của URL hiện tại để assert bên ngoài
    */
-  async verifyOrderPlaced(): Promise<void> {
-    await expect(this.page).toHaveURL(/.*payment_done/);
-    await expect(this.orderPlacedHeading).toHaveText('Order Placed!');
-    await expect(this.confirmationMessage).toBeVisible();
+  getPageUrl(): string {
+    return this.page.url();
   }
 
   /**

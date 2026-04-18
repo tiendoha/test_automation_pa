@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 export class SignupLoginPage {
   readonly page: Page;
@@ -32,12 +32,10 @@ export class SignupLoginPage {
   }
 
   /**
-   * Verifies the Signup/Login page is loaded.
+   * Trả về Locator của URL hiện tại để assert bên ngoài
    */
-  async verifyPageLoaded(): Promise<void> {
-    await expect(this.page).toHaveURL(/.*login/);
-    await expect(this.signupHeading).toBeVisible();
-    await expect(this.loginHeading).toBeVisible();
+  getPageUrl(): string {
+    return this.page.url();
   }
 
   /**

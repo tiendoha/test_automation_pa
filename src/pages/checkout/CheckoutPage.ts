@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 /**
  * Page Object Model for the Cart page.
@@ -34,20 +34,10 @@ export class CheckoutPage {
   }
 
   /**
-   * Verifies the checkout page loaded with the delivery address visible.
+   * Trả về Locator của URL hiện tại để assert bên ngoài
    */
-  async verifyPageLoaded(): Promise<void> {
-    await expect(this.page).toHaveURL(/.*checkout/);
-    await expect(this.deliveryAddressBlock).toBeVisible();
-  }
-
-  /**
-   * Verifies the delivery address section is visible and contains the expected name.
-   * @param fullName - Expected name, e.g. "Mr. Test User"
-   */
-  async verifyDeliveryAddress(fullName: string): Promise<void> {
-    await expect(this.deliveryAddressBlock).toBeVisible();
-    await expect(this.deliveryAddressName).toContainText(fullName);
+  getPageUrl(): string {
+    return this.page.url();
   }
 
   /**
