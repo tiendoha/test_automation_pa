@@ -40,41 +40,50 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    // ─────────────────────────────────────────────────────────
+    // SETUP: Login once and save auth state before authenticated tests run
+    // ─────────────────────────────────────────────────────────
+    {
+      name: 'setup',
+      testMatch: '**/auth.setup.ts',
+    },
+
+    // ─────────────────────────────────────────────────────────
+    // Unauthenticated projects (register, login, cart tests)
+    // ─────────────────────────────────────────────────────────
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: ['**/checkout/**'],
     },
 
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      testIgnore: ['**/checkout/**'],
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+      testIgnore: ['**/checkout/**'],
     },
 
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    // ─────────────────────────────────────────────────────────
+    // Authenticated project: checkout tests use saved session state
+    // Depends on 'setup' to ensure auth.json is created first
+    // ─────────────────────────────────────────────────────────
+    {
+      name: 'chromium:auth',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+      testMatch: ['**/checkout/**'],
+    },
   ],
+
 
   /* Run your local dev server before starting the tests */
   // webServer: {
