@@ -167,7 +167,7 @@ The `:auth` projects automatically depend on `setup` — Playwright runs the set
 
 ## Viewing Test Reports
 
-### Playwright HTML Report
+### Local: Playwright HTML Report
 
 After a test run, open the interactive HTML report:
 
@@ -175,9 +175,9 @@ After a test run, open the interactive HTML report:
 npx playwright show-report
 ```
 
-This opens the report in your browser. The report includes pass/fail status, error messages, screenshots (on failure), videos (on first retry), and traces (on first retry).
+This opens the report in your browser. It includes pass/fail status, error messages, screenshots (on failure), videos (on first retry), and traces (on first retry).
 
-### Allure Report
+### Local: Allure Report
 
 Allure results are written to `allure-results/` after each run. To generate and view the report locally, you need the [Allure CLI](https://allurereport.org/docs/install/) installed:
 
@@ -188,6 +188,54 @@ npm install -g allure-commandline
 # Generate and open the report
 allure serve allure-results
 ```
+
+### GitHub Actions: Allure Report (GitHub Pages)
+
+After every CI run, all Allure results from the 6 browser jobs are merged and automatically deployed to **GitHub Pages**. To access it:
+
+1. Go to your repository on GitHub.
+2. Click the **Actions** tab and open any completed workflow run.
+3. In the **`allure-report` job** summary, click the link labelled **"BẤM VÀO ĐÂY ĐỂ XEM DASHBOARD CHI TIẾT"** — this opens the live Allure dashboard.
+
+Alternatively, navigate directly to:
+
+```
+https://<your-github-username>.github.io/<repository-name>/
+```
+
+> **First-time setup:** GitHub Pages must be enabled on the repository before the report link works. Go to **Settings → Pages → Source** and set the branch to `gh-pages`. The `gh-pages` branch is created automatically after the first successful CI run.
+
+The Allure dashboard shows:
+- Overall pass/fail breakdown with trend history (last 20 runs)
+- Per-test timelines, categories, and retry details
+- Suites, behaviors (Epic/Feature/Story), and severity groupings
+- Attached screenshots and step logs for failed tests
+
+### GitHub Actions: Per-Browser HTML Report (Artifacts)
+
+Each of the 6 browser jobs also uploads its own Playwright HTML report as a downloadable artifact (retained for **7 days**):
+
+1. Go to **Actions** → select a workflow run.
+2. Scroll to the **Artifacts** section at the bottom of the run page.
+3. Download the artifact named `playwright-report-<browser>` (e.g., `playwright-report-chromium`, `playwright-report-firefox-auth`).
+4. Unzip the downloaded file and open `index.html` in your browser.
+
+### GitHub Actions: Job Summary Table
+
+Every run generates a quick-glance summary table directly on the Actions run page:
+
+1. Go to **Actions** → select a workflow run.
+2. Click the **`allure-report`** job in the left sidebar.
+3. The job summary displays a table like the one below:
+
+| Browser / Environment | Status |
+|:---|:---:|
+| chromium | **Pass** ✅ |
+| firefox | **Pass** ✅ |
+| webkit | **Pass** ✅ |
+| chromium:auth | **Pass** ✅ |
+| firefox:auth | **Fail** ❌ |
+| webkit:auth | **Pass** ✅ |
 
 ---
 
