@@ -1,0 +1,3 @@
+[STEP] Gửi API tạo account: POST /api/createAccount cho email testuser_6af7deb9@mailtest.com
+[SETUP] beforeAll: existingUser đã được tạo qua API để dùng cho TC-REG-002  (2026-04-18 11:38:28.096)
+[PASS] TC-REG-001: Should register a new user account successfully  (2026-04-18 11:38:34.849)
