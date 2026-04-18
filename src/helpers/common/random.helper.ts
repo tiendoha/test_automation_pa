@@ -14,7 +14,8 @@ export function generateUniqueEmail(
   prefix: string = 'user',
   domain: string = 'mailtest.com'
 ): string {
-  return `${prefix}_${Date.now()}@${domain}`;
+  const crypto = require('crypto');
+  return `${prefix}_${crypto.randomUUID().split('-')[0]}@${domain}`;
 }
 
 /**
