@@ -25,13 +25,6 @@ export class HomePage {
   }
 
   /**
-   * Trả về Locator của URL hiện tại để assert bên ngoài
-   */
-  getPageUrl(): string {
-    return this.page.url();
-  }
-
-  /**
    * Clicks the Signup / Login link in the navbar.
    */
   async clickSignupLogin(): Promise<void> {

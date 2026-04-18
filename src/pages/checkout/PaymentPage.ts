@@ -26,13 +26,6 @@ export class PaymentPage {
   }
 
   /**
-   * Trả về Locator của URL hiện tại để assert bên ngoài
-   */
-  getPageUrl(): string {
-    return this.page.url();
-  }
-
-  /**
    * Fills all credit card fields with the provided card data.
    */
   async fillPaymentDetails(card: PaymentCardData): Promise<void> {

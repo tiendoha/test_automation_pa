@@ -6,6 +6,8 @@
  * See `.env.example` for required keys.
  */
 export const ENV = {
+  /** Domain url của dự án */
+  baseUrl: process.env.BASE_URL ?? 'https://automationexercise.com',
   /** Email của test account dùng để login trong checkout tests */
   testEmail: process.env.TEST_EMAIL ?? '',
   /** Password của test account */

@@ -27,13 +27,6 @@ export class LoginPage {
   }
 
   /**
-   * Trả về Locator của URL hiện tại để assert bên ngoài
-   */
-  getPageUrl(): string {
-    return this.page.url();
-  }
-
-  /**
    * Fills in the login form with the given credentials and submits.
    * @param email - User's email address
    * @param password - User's password

@@ -7,6 +7,7 @@ import { SignupLoginPage } from '../../pages/register/SignupLoginPage';
 import { RegistrationPage } from '../../pages/register/RegistrationPage';
 import { AccountCreatedPage } from '../../pages/register/AccountCreatedPage';
 import { logger } from '../../helpers/common/logger.helper';
+import { ENV } from '../../configs/env.config';
 
 /**
  * Test Suite: User Login
@@ -29,7 +30,7 @@ test.describe('User Login', () => {
    */
   test.beforeAll(async () => {
     // Tạo API context thay vì browser context để chạy parallel độc lập và nhanh chóng
-    const apiContext = await request.newContext();
+    const apiContext = await request.newContext({ baseURL: ENV.baseUrl });
     
     // Tạo data với email unique cho lần chạy này
     registeredUser = generateUserData();
@@ -68,7 +69,7 @@ test.describe('User Login', () => {
     await loginPage.login(registeredUser.email, registeredUser.password);
 
     // Step 4: Verify redirect về homepage (trạng thái đã đăng nhập)
-    await expect(page).toHaveURL('https://automationexercise.com/');
+    await expect(page).toHaveURL(ENV.baseUrl + '/');
     await expect(homePage.logoutLink).toBeVisible();
 
     // Step 5: Verify username hiển thị đúng trên navbar

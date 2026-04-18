@@ -22,13 +22,6 @@ export class OrderConfirmationPage {
   }
 
   /**
-   * Trả về Locator của URL hiện tại để assert bên ngoài
-   */
-  getPageUrl(): string {
-    return this.page.url();
-  }
-
-  /**
    * Clicks the Continue button to return to the homepage.
    */
   async clickContinue(): Promise<void> {

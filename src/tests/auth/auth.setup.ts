@@ -28,7 +28,7 @@ setup('Authenticate: Login with test account from .env', async ({ page }) => {
   logger.info(`Auth setup bắt đầu với account: ${ENV.testEmail}`);
 
   // Create API context mapping for env user data
-  const apiContext = await request.newContext();
+  const apiContext = await request.newContext({ baseURL: ENV.baseUrl });
   const envUserData: UserRegistrationData = generateUserData();
   envUserData.email = ENV.testEmail;
   envUserData.password = ENV.testPassword;
@@ -52,7 +52,7 @@ setup('Authenticate: Login with test account from .env', async ({ page }) => {
 
   // Step 3: Verify login thành công (đã redirect về homepage, có Logout button)
   logger.step('Verify login thành công trên homepage');
-  await expect(page).toHaveURL('https://automationexercise.com/');
+  await expect(page).toHaveURL(ENV.baseUrl + '/');
   await expect(homePage.logoutLink).toBeVisible();
 
   // Step 4: Lưu session state (cookies + localStorage) vào file

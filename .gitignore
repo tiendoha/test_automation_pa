@@ -43,3 +43,7 @@ Desktop.ini
 # ========== Logs ==========
 logs/
 *.log
+
+# ========== Allure ==========
+allure-results/*.txt
+allure-results/*.json

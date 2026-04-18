@@ -34,13 +34,6 @@ export class ProductsPage {
   }
 
   /**
-   * Trả về Locator của URL hiện tại để assert bên ngoài
-   */
-  getPageUrl(): string {
-    return this.page.url();
-  }
-
-  /**
    * Adds the product at the given 0-based index to the cart by clicking the
    * overlay "Add to cart" button that appears on hover.
    * @param index - 0-based position in the product list

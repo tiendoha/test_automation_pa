@@ -27,13 +27,6 @@ export class CartPage {
   }
 
   /**
-   * Trả về Locator của URL hiện tại để assert bên ngoài
-   */
-  getPageUrl(): string {
-    return this.page.url();
-  }
-
-  /**
    * Returns the <tr> row locator for a product by its display name.
    * @param productName - The exact product name as shown on the site
    */

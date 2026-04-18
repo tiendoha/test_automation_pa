@@ -31,7 +31,7 @@ export async function createAccountViaAPI(apiContext: APIRequestContext, userDat
 
   logger.step(`Gửi API tạo account: POST /api/createAccount cho email ${userData.email}`);
   
-  const response = await apiContext.post('https://automationexercise.com/api/createAccount', {
+  const response = await apiContext.post('/api/createAccount', {
     form: formData
   });
 

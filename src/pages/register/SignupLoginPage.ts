@@ -32,13 +32,6 @@ export class SignupLoginPage {
   }
 
   /**
-   * Trả về Locator của URL hiện tại để assert bên ngoài
-   */
-  getPageUrl(): string {
-    return this.page.url();
-  }
-
-  /**
    * Fills in the name and email in the New User Signup section and clicks Signup.
    * @param name - The user's display name
    * @param email - The user's email address

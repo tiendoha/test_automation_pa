@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 /**
  * Generates a random integer between min and max (inclusive).
  */
@@ -14,7 +15,6 @@ export function generateUniqueEmail(
   prefix: string = 'user',
   domain: string = 'mailtest.com'
 ): string {
-  const crypto = require('crypto');
   return `${prefix}_${crypto.randomUUID().split('-')[0]}@${domain}`;
 }
 

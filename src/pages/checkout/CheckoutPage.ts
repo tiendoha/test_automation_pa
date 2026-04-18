@@ -34,13 +34,6 @@ export class CheckoutPage {
   }
 
   /**
-   * Trả về Locator của URL hiện tại để assert bên ngoài
-   */
-  getPageUrl(): string {
-    return this.page.url();
-  }
-
-  /**
    * Enters a comment in the order message box.
    */
   async enterOrderComment(comment: string): Promise<void> {

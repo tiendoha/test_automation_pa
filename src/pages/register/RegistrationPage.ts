@@ -65,13 +65,6 @@ export class RegistrationPage {
   }
 
   /**
-   * Trả về Locator của URL hiện tại để assert bên ngoài
-   */
-  getPageUrl(): string {
-    return this.page.url();
-  }
-
-  /**
    * Fills the entire registration form and submits it.
    * @param data - User registration data object
    */

@@ -40,7 +40,7 @@ test.describe('Checkout Flow: Buy Clothes', () => {
   }) => {
     // Step 1: Verify user is logged in (session restored from auth state)
     await homePage.navigate();
-    await expect(page).toHaveURL('https://automationexercise.com/');
+    await expect(page).toHaveURL(ENV.baseUrl + '/');
     await expect(homePage.logoutLink).toBeVisible();
     await expect(homePage.loggedInAsLabel).toContainText(ENV.testUsername);
 

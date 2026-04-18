@@ -16,13 +16,6 @@ export class AccountCreatedPage {
   }
 
   /**
-   * Trả về Locator của URL hiện tại để assert bên ngoài
-   */
-  getPageUrl(): string {
-    return this.page.url();
-  }
-
-  /**
    * Clicks the Continue button to proceed to the homepage.
    */
   async clickContinue(): Promise<void> {
