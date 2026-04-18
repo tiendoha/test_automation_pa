@@ -18,5 +18,8 @@ export const TEST_CARD: PaymentCardData = {
 /** Order comment shown during checkout */
 export const ORDER_COMMENT = 'Automation test order – please ignore.';
 
-/** Index positions of products to add (0-based on /products listing) */
-export const CHECKOUT_PRODUCT_INDEXES = [0, 1];
+/**
+ * Exact product names to add during the checkout flow.
+ * Using names instead of indexes makes tests resilient to page reordering.
+ */
+export const CHECKOUT_PRODUCTS: [string, string] = ['Blue Top', 'Men Tshirt'];

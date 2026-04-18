@@ -4,11 +4,14 @@ import { logger } from '../common/logger.helper';
 
 /**
  * Tạo một account mới thông qua API POST /api/createAccount
- * 
+ *
  * @param apiContext Context được khởi tạo qua request.newContext()
- * @param userData Thông tin user để tạo
+ * @param userData   Thông tin user để tạo
  */
-export async function createAccountViaAPI(apiContext: APIRequestContext, userData: UserRegistrationData): Promise<void> {
+export async function createAccountViaAPI(
+  apiContext: APIRequestContext,
+  userData: UserRegistrationData,
+): Promise<void> {
   const formData = {
     name: userData.name,
     email: userData.email,
@@ -26,19 +29,19 @@ export async function createAccountViaAPI(apiContext: APIRequestContext, userDat
     zipcode: userData.zipcode,
     state: userData.state,
     city: userData.city,
-    mobile_number: userData.mobileNumber
+    mobile_number: userData.mobileNumber,
   };
 
   logger.step(`Gửi API tạo account: POST /api/createAccount cho email ${userData.email}`);
-  
+
   const response = await apiContext.post('/api/createAccount', {
-    form: formData
+    form: formData,
   });
 
   expect(response.status()).toBe(200);
 
   const responseBody = await response.json();
-  
+
   if (responseBody.responseCode !== 201) {
     if (responseBody.message === 'Email already exists!') {
       logger.info(`Email ${userData.email} đã tồn tại, tiếp tục (hoặc bỏ qua lỗi).`);
@@ -48,5 +51,37 @@ export async function createAccountViaAPI(apiContext: APIRequestContext, userDat
     }
   } else {
     expect(responseBody.message).toBe('User created!');
+  }
+}
+
+/**
+ * Xóa một account thông qua API DELETE /api/deleteAccount
+ *
+ * Dùng trong afterAll để dọn sạch dữ liệu test sau khi suite hoàn thành.
+ *
+ * @param apiContext Context được khởi tạo qua request.newContext()
+ * @param email      Email của account cần xóa
+ * @param password   Password của account cần xóa
+ */
+export async function deleteAccountViaAPI(
+  apiContext: APIRequestContext,
+  email: string,
+  password: string,
+): Promise<void> {
+  logger.step(`Gửi API xóa account: DELETE /api/deleteAccount cho email ${email}`);
+
+  const response = await apiContext.delete('/api/deleteAccount', {
+    form: { email, password },
+  });
+
+  expect(response.status()).toBe(200);
+
+  const responseBody = await response.json();
+
+  if (responseBody.responseCode === 200) {
+    logger.info(`Account ${email} đã được xóa thành công.`);
+  } else {
+    // Nếu account không tồn tại thì bỏ qua (idempotent cleanup)
+    logger.info(`Bỏ qua xóa account ${email}: ${JSON.stringify(responseBody)}`);
   }
 }

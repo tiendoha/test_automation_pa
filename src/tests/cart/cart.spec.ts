@@ -1,6 +1,7 @@
 import { test, expect } from '../../fixtures';
 import { CART_PRODUCTS } from '../../data/cart/cart.data';
 import { logger } from '../../helpers/common/logger.helper';
+import { feature, story, severity, description } from 'allure-js-commons';
 
 /**
  * Test Suite: Add Product To Cart
@@ -10,13 +11,9 @@ import { logger } from '../../helpers/common/logger.helper';
  *
  * Flow:
  *  1. Mở trang Products
- *  2. Thêm 2 sản phẩm vào giỏ hàng
+ *  2. Thêm 2 sản phẩm vào giỏ hàng (by name — stable, index-agnostic)
  *  3. Mở giỏ hàng
  *  4. Verify Product Name, Price, Quantity cho từng sản phẩm
- *
- * Fixtures inject:
- *  - productsPage → ProductsPage
- *  - cartPage     → CartPage
  */
 test.describe('Add Product To Cart', () => {
 
@@ -26,9 +23,9 @@ test.describe('Add Product To Cart', () => {
    * Steps:
    *  1.  Navigate đến trang /products
    *  2.  Verify products page loaded
-   *  3.  Hover sản phẩm 1 → Click "Add to cart"
+   *  3.  Hover sản phẩm "Blue Top" → Click "Add to cart"
    *  4.  Click "Continue Shopping" để ở lại trang products
-   *  5.  Hover sản phẩm 2 → Click "Add to cart"
+   *  5.  Hover sản phẩm "Men Tshirt" → Click "Add to cart"
    *  6.  Click "View Cart" trên modal → Verify điều hướng sang cart page
    *  7.  Verify tổng số sản phẩm trong giỏ = 2
    *  8.  Verify sản phẩm 1: Name ✓ | Price ✓ | Quantity ✓
@@ -39,6 +36,14 @@ test.describe('Add Product To Cart', () => {
     productsPage,
     cartPage,
   }) => {
+    await feature('Cart');
+    await story('Add To Cart');
+    await severity('critical');
+    await description(
+      'Verifies that two specific products can be added to the cart by name ' +
+      'and that their name, price, and quantity are correct in the cart view.',
+    );
+
     const [product1, product2] = CART_PRODUCTS;
 
     // Step 1 & 2: Navigate to products page and verify it's loaded
@@ -46,15 +51,14 @@ test.describe('Add Product To Cart', () => {
     await expect(page).toHaveURL(/.*products/);
     await expect(productsPage.productsHeading).toBeVisible();
 
-    // Step 3: Add first product → Continue Shopping (stay on products page)
-    await productsPage.addProductToCartByIndex(0);
-    // User sees success modal
+    // Step 3: Add first product by name → Continue Shopping (stay on products page)
+    await productsPage.addProductToCartByName(product1.name);
     await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.continueShopping();
     await expect(productsPage.modalSuccessText).toBeHidden();
 
-    // Step 5: Add second product → View Cart via modal
-    await productsPage.addProductToCartByIndex(1);
+    // Step 5: Add second product by name → View Cart via modal
+    await productsPage.addProductToCartByName(product2.name);
     await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.goToCartViaModal();
 
@@ -78,8 +82,8 @@ test.describe('Add Product To Cart', () => {
    * TC-CART-002: Verify cart persists when navigating back from products
    *
    * Steps:
-   *  1.  Thêm sản phẩm 1 vào cart → Continue Shopping
-   *  2.  Thêm sản phẩm 2 vào cart → Continue Shopping
+   *  1.  Thêm sản phẩm "Blue Top" vào cart → Continue Shopping
+   *  2.  Thêm sản phẩm "Men Tshirt" vào cart → Continue Shopping
    *  3.  Navigate trực tiếp đến /view_cart
    *  4.  Verify cả 2 sản phẩm vẫn còn trong giỏ hàng
    */
@@ -88,17 +92,27 @@ test.describe('Add Product To Cart', () => {
     productsPage,
     cartPage,
   }) => {
-    // Step 1: Add first product, continue shopping
+    await feature('Cart');
+    await story('Cart Persistence');
+    await severity('normal');
+    await description(
+      'Verifies that products added to the cart are still present ' +
+      'when navigating directly to /view_cart without using the modal.',
+    );
+
+    const [product1, product2] = CART_PRODUCTS;
+
+    // Step 1: Add first product by name, continue shopping
     await productsPage.navigate();
     await expect(page).toHaveURL(/.*products/);
     await expect(productsPage.productsHeading).toBeVisible();
-    
-    await productsPage.addProductToCartByIndex(0);
+
+    await productsPage.addProductToCartByName(product1.name);
     await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.continueShopping();
 
-    // Step 2: Add second product, continue shopping
-    await productsPage.addProductToCartByIndex(1);
+    // Step 2: Add second product by name, continue shopping
+    await productsPage.addProductToCartByName(product2.name);
     await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.continueShopping();
 

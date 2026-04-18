@@ -1,8 +1,8 @@
 import { test, expect } from '../../fixtures';
 import { ENV } from '../../configs/env.config';
-import { TEST_CARD, ORDER_COMMENT, CHECKOUT_PRODUCT_INDEXES } from '../../data/checkout/checkout.data';
+import { TEST_CARD, ORDER_COMMENT, CHECKOUT_PRODUCTS } from '../../data/checkout/checkout.data';
 import { logger } from '../../helpers/common/logger.helper';
-
+import { feature, story, severity, description } from 'allure-js-commons';
 
 // Dùng session đã lưu bởi auth.setup.ts — không cần login lại
 test.use({ storageState: ENV.authStatePath });
@@ -17,7 +17,7 @@ test.describe('Checkout Flow: Buy Clothes', () => {
    * Steps:
    *  1.  Verify user is logged in on homepage
    *  2.  Navigate đến trang /products
-   *  3.  Thêm 2 sản phẩm vào giỏ hàng
+   *  3.  Thêm 2 sản phẩm vào giỏ hàng (by name — stable locator)
    *  4.  Mở giỏ hàng (/view_cart)
    *  5.  Click "Proceed To Checkout"
    *  6.  Verify trang checkout loaded
@@ -38,6 +38,15 @@ test.describe('Checkout Flow: Buy Clothes', () => {
     paymentPage,
     orderConfirmationPage,
   }) => {
+    await feature('Checkout');
+    await story('Happy Path');
+    await severity('critical');
+    await description(
+      'Full end-to-end checkout flow: authenticated user adds two products by name, ' +
+      'proceeds to checkout, verifies delivery address, places an order, ' +
+      'pays with a test card, and confirms "Order Placed!" on the final page.',
+    );
+
     // Step 1: Verify user is logged in (session restored from auth state)
     await homePage.navigate();
     await expect(page).toHaveURL(ENV.baseUrl);
@@ -49,13 +58,13 @@ test.describe('Checkout Flow: Buy Clothes', () => {
     await expect(page).toHaveURL(/.*products/);
     await expect(productsPage.productsHeading).toBeVisible();
 
-    // Step 3: Add first product → Continue Shopping
-    await productsPage.addProductToCartByIndex(CHECKOUT_PRODUCT_INDEXES[0]);
+    // Step 3: Add first product by name → Continue Shopping
+    await productsPage.addProductToCartByName(CHECKOUT_PRODUCTS[0]);
     await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.continueShopping();
 
-    // Step 3 cont: Add second product → View Cart via modal
-    await productsPage.addProductToCartByIndex(CHECKOUT_PRODUCT_INDEXES[1]);
+    // Step 3 cont: Add second product by name → View Cart via modal
+    await productsPage.addProductToCartByName(CHECKOUT_PRODUCTS[1]);
     await expect(productsPage.modalSuccessText).toBeVisible();
     await productsPage.goToCartViaModal();
 
@@ -70,7 +79,6 @@ test.describe('Checkout Flow: Buy Clothes', () => {
     await expect(checkoutPage.deliveryAddressBlock).toBeVisible();
 
     // Step 7: Verify delivery address contains user's name (Mr./Mrs. + username)
-    await expect(checkoutPage.deliveryAddressBlock).toBeVisible();
     await expect(checkoutPage.deliveryAddressName).toContainText(ENV.testUsername);
 
     // Step 8: Enter order comment

@@ -1,13 +1,10 @@
 import { test, expect, request } from '../../fixtures';
 import { generateUserData, UserRegistrationData } from '../../data/register/user.data';
-import { createAccountViaAPI } from '../../helpers/api/auth.api.helper';
+import { createAccountViaAPI, deleteAccountViaAPI } from '../../helpers/api/auth.api.helper';
 import { INVALID_CREDENTIALS } from '../../data/login/login.data';
-import { HomePage } from '../../pages/register/HomePage';
-import { SignupLoginPage } from '../../pages/register/SignupLoginPage';
-import { RegistrationPage } from '../../pages/register/RegistrationPage';
-import { AccountCreatedPage } from '../../pages/register/AccountCreatedPage';
 import { logger } from '../../helpers/common/logger.helper';
 import { ENV } from '../../configs/env.config';
+import { feature, story, severity, description } from 'allure-js-commons';
 
 /**
  * Test Suite: User Login
@@ -15,10 +12,11 @@ import { ENV } from '../../configs/env.config';
  * Tech Stack: Playwright + TypeScript + Page Object Model + Fixtures
  *
  * Flow:
- *  [beforeAll] Register tạo account mới → lấy email & password vừa tạo
+ *  [beforeAll] Register tạo account mới qua API → lấy email & password vừa tạo
  *  [TC-LOGIN-001] Login bằng email/password vừa tạo → Verify success → Verify username → Logout
  *  [TC-LOGIN-002] Login với sai password → Verify error message
  *  [TC-LOGIN-003] Login với email không tồn tại → Verify error message
+ *  [afterAll]  Xóa account test qua API để dọn dữ liệu rác
  */
 test.describe('User Login', () => {
   // Lưu thông tin account vừa đăng ký để dùng trong tất cả login tests
@@ -29,19 +27,22 @@ test.describe('User Login', () => {
    * Tạo account mới với email unique, sau đó logout để chuẩn bị cho login tests.
    */
   test.beforeAll(async () => {
-    // Tạo API context thay vì browser context để chạy parallel độc lập và nhanh chóng
     const apiContext = await request.newContext({ baseURL: ENV.baseUrl });
-    
-    // Tạo data với email unique cho lần chạy này
     registeredUser = generateUserData();
-
-    // Call helper API account
     await createAccountViaAPI(apiContext, registeredUser);
-    
-    // Đóng context
     await apiContext.dispose();
-
     logger.setup('beforeAll: Account đã được tạo qua API và sẵn sàng cho login tests');
+  });
+
+  /**
+   * TEARDOWN: Xóa account test sau khi toàn bộ suite chạy xong.
+   * Đảm bảo không để lại dữ liệu rác trên server.
+   */
+  test.afterAll(async () => {
+    const apiContext = await request.newContext({ baseURL: ENV.baseUrl });
+    await deleteAccountViaAPI(apiContext, registeredUser.email, registeredUser.password);
+    await apiContext.dispose();
+    logger.info('afterAll: registeredUser đã được xóa qua API');
   });
 
   /**
@@ -60,6 +61,14 @@ test.describe('User Login', () => {
     loginPage,
     homePage,
   }) => {
+    await feature('Login');
+    await story('Happy Path');
+    await severity('critical');
+    await description(
+      'Verifies successful login with a freshly registered account: ' +
+      'correct redirect, username in navbar, and successful logout.',
+    );
+
     // Step 1 & 2: Mở và verify login page
     await loginPage.navigate();
     await expect(page).toHaveURL(/.*login/);
@@ -95,6 +104,14 @@ test.describe('User Login', () => {
     page,
     loginPage,
   }) => {
+    await feature('Login');
+    await story('Negative Path');
+    await severity('normal');
+    await description(
+      'Verifies that logging in with a correct email but wrong password ' +
+      'displays the appropriate error message and keeps the user on /login.',
+    );
+
     await loginPage.navigate();
     await expect(page).toHaveURL(/.*login/);
 
@@ -119,6 +136,14 @@ test.describe('User Login', () => {
     page,
     loginPage,
   }) => {
+    await feature('Login');
+    await story('Negative Path');
+    await severity('minor');
+    await description(
+      'Verifies that logging in with a non-existent email address ' +
+      'displays the appropriate error message.',
+    );
+
     await loginPage.navigate();
     await expect(page).toHaveURL(/.*login/);
 
@@ -132,4 +157,3 @@ test.describe('User Login', () => {
     logger.pass('TC-LOGIN-003', 'Should show error when logging in with non-existent email');
   });
 });
-

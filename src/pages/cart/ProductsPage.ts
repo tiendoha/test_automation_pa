@@ -36,13 +36,31 @@ export class ProductsPage {
   /**
    * Adds the product at the given 0-based index to the cart by clicking the
    * overlay "Add to cart" button that appears on hover.
+   *
    * @param index - 0-based position in the product list
+   * @deprecated Prefer `addProductToCartByName` for a more stable, name-based locator.
    */
   async addProductToCartByIndex(index: number): Promise<void> {
     const card = this.productCards.nth(index);
-    // Hover to reveal the overlay add-to-cart button
     await card.hover();
-    // Use getByText for robust locator instead of raw CSS path
+    await card.locator('div.overlay-content').getByText('Add to cart').click();
+  }
+
+  /**
+   * Adds a product to the cart by its exact display name.
+   *
+   * Finds the product card that contains a link with the given `productName`,
+   * hovers over it to reveal the overlay, then clicks "Add to cart".
+   * This approach is resilient to reordering of products on the page.
+   *
+   * @param productName - Exact product name as displayed on the listing page
+   *                      (e.g. 'Blue Top', 'Men Tshirt')
+   */
+  async addProductToCartByName(productName: string): Promise<void> {
+    const card = this.productCards.filter({
+      has: this.page.locator('p').filter({ hasText: productName }),
+    });
+    await card.hover();
     await card.locator('div.overlay-content').getByText('Add to cart').click();
   }
 
