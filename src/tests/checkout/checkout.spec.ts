@@ -8,8 +8,6 @@ import { feature, story, severity, description } from 'allure-js-commons';
 test.use({ storageState: ENV.authStatePath });
 
 test.describe('Checkout Flow: Buy Clothes', () => {
-  // Checkout flow navigates through 5 pages — give each test enough time
-  test.setTimeout(90_000);
 
   /**
    * TC-CHECKOUT-001: Happy path — Complete full checkout flow
