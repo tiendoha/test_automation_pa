@@ -75,13 +75,33 @@ export default defineConfig({
     },
 
     // ─────────────────────────────────────────────────────────
-    // Authenticated project: checkout tests use saved session state
+    // Authenticated projects: checkout tests use saved session state
     // Depends on 'setup' to ensure auth.json is created first
     // ─────────────────────────────────────────────────────────
     {
       name: 'chromium:auth',
       use: {
         ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+      testMatch: ['**/checkout/**'],
+    },
+
+    {
+      name: 'firefox:auth',
+      use: {
+        ...devices['Desktop Firefox'],
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+      testMatch: ['**/checkout/**'],
+    },
+
+    {
+      name: 'webkit:auth',
+      use: {
+        ...devices['Desktop Safari'],
         storageState: 'playwright/.auth/user.json',
       },
       dependencies: ['setup'],

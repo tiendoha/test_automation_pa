@@ -45,5 +45,4 @@ logs/
 *.log
 
 # ========== Allure ==========
-allure-results/*.txt
-allure-results/*.json
+allure-results/
