@@ -39,7 +39,7 @@ test.describe('Checkout Flow: Buy Clothes', () => {
     orderConfirmationPage,
   }) => {
     await feature('Checkout');
-    await story('Happy Path');
+    await story('Complete full order and payment flow');
     await severity('critical');
     await description(
       'Full end-to-end checkout flow: authenticated user adds two products by name, ' +

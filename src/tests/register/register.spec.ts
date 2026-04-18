@@ -62,7 +62,7 @@ test.describe('User Registration', () => {
     accountCreatedPage,
   }) => {
     await feature('Registration');
-    await story('Happy Path');
+    await story('Register new user successfully');
     await severity('critical');
     await description(
       'Verifies the full end-to-end user registration flow: ' +
@@ -127,7 +127,7 @@ test.describe('User Registration', () => {
     signupLoginPage,
   }) => {
     await feature('Registration');
-    await story('Negative Path');
+    await story('Registration fails with existing email');
     await severity('normal');
     await description(
       'Verifies that attempting to sign up with an already-registered email ' +

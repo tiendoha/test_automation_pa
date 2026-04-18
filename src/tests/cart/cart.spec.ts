@@ -37,7 +37,7 @@ test.describe('Add Product To Cart', () => {
     cartPage,
   }) => {
     await feature('Cart');
-    await story('Add To Cart');
+    await story('Add products to cart');
     await severity('critical');
     await description(
       'Verifies that two specific products can be added to the cart by name ' +
@@ -93,7 +93,7 @@ test.describe('Add Product To Cart', () => {
     cartPage,
   }) => {
     await feature('Cart');
-    await story('Cart Persistence');
+    await story('Verify cart remains after navigation');
     await severity('normal');
     await description(
       'Verifies that products added to the cart are still present ' +

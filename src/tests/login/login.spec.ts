@@ -62,7 +62,7 @@ test.describe('User Login', () => {
     homePage,
   }) => {
     await feature('Login');
-    await story('Happy Path');
+    await story('Login successfully with valid account');
     await severity('critical');
     await description(
       'Verifies successful login with a freshly registered account: ' +
@@ -105,7 +105,7 @@ test.describe('User Login', () => {
     loginPage,
   }) => {
     await feature('Login');
-    await story('Negative Path');
+    await story('Login fails with incorrect password');
     await severity('normal');
     await description(
       'Verifies that logging in with a correct email but wrong password ' +
@@ -137,7 +137,7 @@ test.describe('User Login', () => {
     loginPage,
   }) => {
     await feature('Login');
-    await story('Negative Path');
+    await story('Login fails with non-existent email');
     await severity('minor');
     await description(
       'Verifies that logging in with a non-existent email address ' +
