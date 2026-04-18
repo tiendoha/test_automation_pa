@@ -69,7 +69,7 @@ test.describe('User Login', () => {
     await loginPage.login(registeredUser.email, registeredUser.password);
 
     // Step 4: Verify redirect về homepage (trạng thái đã đăng nhập)
-    await expect(page).toHaveURL(ENV.baseUrl + '/');
+    await expect(page).toHaveURL(ENV.baseUrl);
     await expect(homePage.logoutLink).toBeVisible();
 
     // Step 5: Verify username hiển thị đúng trên navbar

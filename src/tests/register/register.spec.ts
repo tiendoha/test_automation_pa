@@ -36,7 +36,7 @@ test.describe('User Registration', () => {
 
     // Step 1: Open homepage and verify it is loaded
     await homePage.navigate();
-    await expect(page).toHaveURL(ENV.baseUrl + '/');
+    await expect(page).toHaveURL(ENV.baseUrl);
     await expect(homePage.signupLoginLink).toBeVisible();
 
     // Step 2: Click Signup / Login link
