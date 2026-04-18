@@ -69,12 +69,20 @@ jobs:
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
           TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
 
+      # ── Xử lý tên Artifact để tránh lỗi ký tự đặc biệt (dấu hai chấm) ──────
+      - name: Sanitize Artifact Name
+        if: ${{ !cancelled() }}
+        run: |
+          SAFE_NAME="${{ matrix.project }}"
+          SAFE_NAME="${SAFE_NAME//:/-}"
+          echo "SAFE_NAME=$SAFE_NAME" >> $GITHUB_ENV
+
       # ── Upload Playwright HTML report ────────────────────────────────────────
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ matrix.project }}
+          name: playwright-report-${{ env.SAFE_NAME }}
           path: playwright-report/
           retention-days: 7
 
@@ -83,7 +91,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: allure-results-${{ matrix.project }}
+          name: allure-results-${{ env.SAFE_NAME }}
           path: allure-results/
           retention-days: 7
 
@@ -138,9 +146,9 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Browser Project | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| chromium |" >> $GITHUB_STEP_SUMMARY
-          echo "| firefox |" >> $GITHUB_STEP_SUMMARY
-          echo "| webkit |" >> $GITHUB_STEP_SUMMARY
-          echo "| chromium:auth |" >> $GITHUB_STEP_SUMMARY
-          echo "| firefox:auth |" >> $GITHUB_STEP_SUMMARY
-          echo "| webkit:auth |" >> $GITHUB_STEP_SUMMARY
+          echo "| chromium | " >> $GITHUB_STEP_SUMMARY
+          echo "| firefox | " >> $GITHUB_STEP_SUMMARY
+          echo "| webkit | " >> $GITHUB_STEP_SUMMARY
+          echo "| chromium:auth | " >> $GITHUB_STEP_SUMMARY
+          echo "| firefox:auth | " >> $GITHUB_STEP_SUMMARY
+          echo "| webkit:auth | " >> $GITHUB_STEP_SUMMARY
