@@ -1,0 +1,1 @@
+[PASS] TC-CHECKOUT-001: Should complete full checkout flow successfully  (2026-04-19 14:07:21.491)
