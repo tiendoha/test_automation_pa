@@ -164,7 +164,7 @@ The website publishes **26 standard test cases** at [/test_cases](https://automa
 | Risk | Probability | Impact | Current mitigation | Residual |
 |------|:-----------:|:------:|-------------------|:--------:|
 | **Google Ads overlaying interactive elements** (the target site serves Google-served display ads on products/home) | High | High — `ElementClickInterceptedError` or clicks landing on the wrong element | None at the moment — there is no shared `dismissAds()` helper; on CI Playwright retries catch most occurrences | High |
-| **Product availability / naming drift** for `Blue Top` and `Men Tshirt` | Medium | High — breaks `TC-CART-001`, `TC-CART-002`, `TC-CHECKOUT-001` simultaneously | Name-based locators decouple selection from index; product names/prices centralized in `cart.data.ts` and `checkout.data.ts` | Medium |
+| **Product availability / naming drift** for `Blue Top` and `Men Tshirt` | Medium | High — breaks `TC-CART-001`, `TC-CART-002`, `TC-CHECKOUT-001` simultaneously | Name-based locators decouple selection from product names/prices centralized in `cart.data.ts` and `checkout.data.ts` | Medium |
 | **Payment not rendered inside an iframe (today)** | Low | High — if a future payment provider moves the form into an iframe, `PaymentPage` breaks | All card inputs resolve via `[data-qa="…"]` in the main DOM; no iframe handling exists | Low (today) |
 | **Brittle locators from UI redesign** | Medium | High — fails many specs at once | `getByRole` / `getByText` / `[data-qa]` used throughout; no XPath, minimal CSS | Low |
 | **Async UI transitions causing flake** | Medium | Medium | Playwright auto-retrying matchers everywhere; `page.waitForTimeout` forbidden (last occurrence removed in `ed97829`) | Low |
