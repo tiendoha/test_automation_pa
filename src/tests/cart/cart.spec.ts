@@ -5,31 +5,31 @@ import { feature, story, severity, description } from 'allure-js-commons';
 
 /**
  * Test Suite: Add Product To Cart
- * Feature: Thêm sản phẩm vào giỏ hàng và verify thông tin
+ * Feature: Add products to cart and verify details
  * URL: https://automationexercise.com
- * Tech Stack: Playwright + TypeScript + Page Object Model + Fixtures
+ * Tech Stack: Playwright + TypeScript + POM + Fixtures
  *
  * Flow:
- *  1. Mở trang Products
- *  2. Thêm 2 sản phẩm vào giỏ hàng (by name — stable, index-agnostic)
- *  3. Mở giỏ hàng
- *  4. Verify Product Name, Price, Quantity cho từng sản phẩm
+ *  1. Open Products page
+ *  2. Add 2 products to cart by name
+ *  3. Open cart
+ *  4. Verify product Name, Price, and Quantity
  */
 test.describe('Add Product To Cart', () => {
 
   /**
-   * TC-CART-001: Happy path — Thêm 2 sản phẩm vào giỏ và verify thông tin
+   * TC-CART-001: Happy path — Add 2 products to cart and verify details
    *
    * Steps:
-   *  1.  Navigate đến trang /products
-   *  2.  Verify products page loaded
-   *  3.  Hover sản phẩm "Blue Top" → Click "Add to cart"
-   *  4.  Click "Continue Shopping" để ở lại trang products
-   *  5.  Hover sản phẩm "Men Tshirt" → Click "Add to cart"
-   *  6.  Click "View Cart" trên modal → Verify điều hướng sang cart page
-   *  7.  Verify tổng số sản phẩm trong giỏ = 2
-   *  8.  Verify sản phẩm 1: Name ✓ | Price ✓ | Quantity ✓
-   *  9.  Verify sản phẩm 2: Name ✓ | Price ✓ | Quantity ✓
+   *  1. Navigate to /products page
+   *  2. Verify products page loaded
+   *  3. Hover "Blue Top" → Click "Add to cart"
+   *  4. Click "Continue Shopping" to stay on products page
+   *  5. Hover "Men Tshirt" → Click "Add to cart"
+   *  6. Click "View Cart" on modal → Verify redirect to cart page
+   *  7. Verify total products in cart = 2
+   *  8. Verify product 1: Name, Price, Quantity
+   *  9. Verify product 2: Name, Price, Quantity
    */
   test('TC-CART-001: Should add 2 products to cart and verify their details', async ({
     page,
@@ -82,10 +82,10 @@ test.describe('Add Product To Cart', () => {
    * TC-CART-002: Verify cart persists when navigating back from products
    *
    * Steps:
-   *  1.  Thêm sản phẩm "Blue Top" vào cart → Continue Shopping
-   *  2.  Thêm sản phẩm "Men Tshirt" vào cart → Continue Shopping
-   *  3.  Navigate trực tiếp đến /view_cart
-   *  4.  Verify cả 2 sản phẩm vẫn còn trong giỏ hàng
+   *  1. Add "Blue Top" to cart → Continue Shopping
+   *  2. Add "Men Tshirt" to cart → Continue Shopping
+   *  3. Navigate directly to /view_cart
+   *  4. Verify both products remain in the cart
    */
   test('TC-CART-002: Cart should still contain products after navigating directly to cart', async ({
     page,

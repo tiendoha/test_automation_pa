@@ -8,53 +8,51 @@ import { feature, story, severity, description } from 'allure-js-commons';
 
 /**
  * Test Suite: User Login
- * Feature: Login với account vừa mới đăng ký
- * Tech Stack: Playwright + TypeScript + Page Object Model + Fixtures
+ * Feature: Login with newly registered account
+ * Tech Stack: Playwright + TypeScript + POM + Fixtures
  *
  * Flow:
- *  [beforeAll] Register tạo account mới qua API → lấy email & password vừa tạo
- *  [TC-LOGIN-001] Login bằng email/password vừa tạo → Verify success → Verify username → Logout
- *  [TC-LOGIN-002] Login với sai password → Verify error message
- *  [TC-LOGIN-003] Login với email không tồn tại → Verify error message
- *  [afterAll]  Xóa account test qua API để dọn dữ liệu rác
+ *  [beforeAll] Register a new account via API
+ *  [TC-LOGIN-001] Login with valid credentials → Verify success → Logout
+ *  [TC-LOGIN-002] Login with wrong password → Verify error
+ *  [TC-LOGIN-003] Login with non-existent email → Verify error
+ *  [afterAll] Delete the test account via API
  */
 test.describe('User Login', () => {
-  // Lưu thông tin account vừa đăng ký để dùng trong tất cả login tests
+  // Store registered user data for tests
   let registeredUser: UserRegistrationData;
 
   /**
-   * SETUP: Chạy register flow một lần trước toàn bộ test suite.
-   * Tạo account mới với email unique, sau đó logout để chuẩn bị cho login tests.
+   * SETUP: Create a new account with a unique email via API.
    */
   test.beforeAll(async () => {
     const apiContext = await request.newContext({ baseURL: ENV.baseUrl });
     registeredUser = generateUserData();
     await createAccountViaAPI(apiContext, registeredUser);
     await apiContext.dispose();
-    logger.setup('beforeAll: Account đã được tạo qua API và sẵn sàng cho login tests');
+    logger.setup('beforeAll: Account created via API');
   });
 
   /**
-   * TEARDOWN: Xóa account test sau khi toàn bộ suite chạy xong.
-   * Đảm bảo không để lại dữ liệu rác trên server.
+   * TEARDOWN: Delete the test account via API.
    */
   test.afterAll(async () => {
     const apiContext = await request.newContext({ baseURL: ENV.baseUrl });
     await deleteAccountViaAPI(apiContext, registeredUser.email, registeredUser.password);
     await apiContext.dispose();
-    logger.info('afterAll: registeredUser đã được xóa qua API');
+    logger.info('afterAll: registeredUser deleted via API');
   });
 
   /**
-   * TC-LOGIN-001: Happy path — Login với account vừa đăng ký
+   * TC-LOGIN-001: Happy path — Login with the new account
    *
    * Steps:
-   *  1. Mở /login page
+   *  1. Open /login page
    *  2. Verify login page loaded
-   *  3. Nhập email và password của account vừa tạo
-   *  4. Verify redirect về homepage sau khi login thành công
-   *  5. Verify "Logged in as <username>" hiển thị trên navbar
-   *  6. Logout và verify redirect về login page
+   *  3. Enter email and password
+   *  4. Verify redirect to homepage
+   *  5. Verify "Logged in as <username>"
+   *  6. Logout and verify redirect to login page
    */
   test('TC-LOGIN-001: Should login successfully with the newly registered account', async ({
     page,
@@ -69,22 +67,22 @@ test.describe('User Login', () => {
       'correct redirect, username in navbar, and successful logout.',
     );
 
-    // Step 1 & 2: Mở và verify login page
+    // Step 1 & 2: Open and verify login page
     await loginPage.navigate();
     await expect(page).toHaveURL(/.*login/);
     await expect(loginPage.loginHeading).toBeVisible();
 
-    // Step 3: Đăng nhập bằng credentials của account vừa tạo trong beforeAll
+    // Step 3: Login with registered account
     await loginPage.login(registeredUser.email, registeredUser.password);
 
-    // Step 4: Verify redirect về homepage (trạng thái đã đăng nhập)
+    // Step 4: Verify redirect to homepage
     await expect(page).toHaveURL(ENV.baseUrl);
     await expect(homePage.logoutLink).toBeVisible();
 
-    // Step 5: Verify username hiển thị đúng trên navbar
+    // Step 5: Verify username on navbar
     await expect(homePage.loggedInAsLabel).toContainText(registeredUser.name);
 
-    // Step 6: Logout và verify quay về login page
+    // Step 6: Logout and verify redirect to login page
     await homePage.logout();
     await expect(page).toHaveURL(/.*login/);
 
@@ -92,13 +90,13 @@ test.describe('User Login', () => {
   });
 
   /**
-   * TC-LOGIN-002: Login fail với sai password
+   * TC-LOGIN-002: Login fails with wrong password
    *
    * Steps:
-   *  1. Mở /login page
-   *  2. Nhập đúng email nhưng sai password
-   *  3. Verify error "Your email or password is incorrect!" hiển thị
-   *  4. Verify user vẫn ở lại login page
+   *  1. Open /login page
+   *  2. Enter valid email but wrong password
+   *  3. Verify error message
+   *  4. Verify user remains on login page
    */
   test('TC-LOGIN-002: Should show error when logging in with incorrect password', async ({
     page,
@@ -115,7 +113,7 @@ test.describe('User Login', () => {
     await loginPage.navigate();
     await expect(page).toHaveURL(/.*login/);
 
-    // Dùng email của account vừa tạo nhưng sai password
+    // Login with registered email but invalid password
     await loginPage.login(registeredUser.email, INVALID_CREDENTIALS.wrongPassword.password);
 
     await expect(loginPage.loginErrorMessage).toBeVisible();
@@ -125,12 +123,12 @@ test.describe('User Login', () => {
   });
 
   /**
-   * TC-LOGIN-003: Login fail với email không tồn tại
+   * TC-LOGIN-003: Login fails with non-existent email
    *
    * Steps:
-   *  1. Mở /login page
-   *  2. Nhập email không tồn tại
-   *  3. Verify error "Your email or password is incorrect!" hiển thị
+   *  1. Open /login page
+   *  2. Enter non-existent email
+   *  3. Verify error message
    */
   test('TC-LOGIN-003: Should show error when logging in with non-existent email', async ({
     page,

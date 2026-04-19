@@ -13,9 +13,8 @@ import { feature, story, severity, description } from 'allure-js-commons';
 test.describe('User Registration', () => {
 
   /**
-   * SETUP: Tạo một account sẵn có trước khi chạy toàn bộ suite.
-   * Account này được dùng bởi TC-REG-002 để kiểm tra trường hợp đăng ký
-   * với email đã tồn tại. Dùng API thay vì UI để nhanh và đáng tin cậy.
+   * SETUP: Create an existing account via API before running the suite.
+   * Used by TC-REG-002 to test registration with an already registered email.
    */
   let existingUser: UserRegistrationData;
 
@@ -24,35 +23,34 @@ test.describe('User Registration', () => {
     existingUser = generateUserData();
     await createAccountViaAPI(apiContext, existingUser);
     await apiContext.dispose();
-    logger.setup('beforeAll: existingUser đã được tạo qua API để dùng cho TC-REG-002');
+    logger.setup('beforeAll: existingUser created via API for TC-REG-002');
   });
 
   /**
-   * TEARDOWN: Xóa account được tạo trong beforeAll sau khi suite hoàn thành.
-   * TC-REG-001 dùng một account riêng (generateUserData mỗi lần) → không cần cleanup ở đây.
-   * existingUser là account duy nhất được tạo cố định qua API → cần xóa.
+   * TEARDOWN: Delete the account created in beforeAll.
+   * The dynamically generated account in TC-REG-001 doesn't need cleanup here.
    */
   test.afterAll(async () => {
     const apiContext = await request.newContext({ baseURL: ENV.baseUrl });
     await deleteAccountViaAPI(apiContext, existingUser.email, existingUser.password);
     await apiContext.dispose();
-    logger.info('afterAll: existingUser đã được xóa qua API');
+    logger.info('afterAll: existingUser deleted via API');
   });
 
   /**
    * TC-REG-001: Happy path - Register a new user account successfully
    *
    * Steps:
-   *  1.  Open the homepage and verify it is loaded
-   *  2.  Click Signup / Login in the navbar
-   *  3.  Verify Signup/Login page is displayed
-   *  4.  Enter name and email, click Signup
-   *  5.  Verify the Registration form page is displayed
-   *  6.  Fill in all required fields and submit the form
-   *  7.  Verify "ACCOUNT CREATED!" confirmation page
-   *  8.  Click Continue to return to homepage
-   *  9.  Verify user is logged in ("Logged in as <name>")
-   *  10. Logout and verify redirect back to login page
+   *  1. Open homepage and verify it's loaded
+   *  2. Click Signup / Login
+   *  3. Verify Signup/Login page
+   *  4. Enter name and email, click Signup
+   *  5. Verify Registration form
+   *  6. Fill required fields and submit
+   *  7. Verify "ACCOUNT CREATED!" page
+   *  8. Click Continue
+   *  9. Verify user is logged in
+   *  10. Logout and verify redirect to login page
    */
   test('TC-REG-001: Should register a new user account successfully', async ({
     page,
@@ -71,27 +69,27 @@ test.describe('User Registration', () => {
 
     const user = generateUserData();
 
-    // Step 1: Open homepage and verify it is loaded
+    // Step 1: Open homepage and verify it's loaded
     await homePage.navigate();
     await expect(page).toHaveURL(ENV.baseUrl);
     await expect(homePage.signupLoginLink).toBeVisible();
 
-    // Step 2: Click Signup / Login link
+    // Step 2: Click Signup / Login
     await homePage.clickSignupLogin();
 
-    // Step 3: Verify Signup/Login page is shown
+    // Step 3: Verify Signup/Login page
     await expect(page).toHaveURL(/.*login/);
     await expect(signupLoginPage.signupHeading).toBeVisible();
     await expect(signupLoginPage.loginHeading).toBeVisible();
 
-    // Step 4: Enter name & email, click Signup button
+    // Step 4: Enter name & email, click Signup
     await signupLoginPage.signup(user.name, user.email);
 
-    // Step 5: Verify the registration form page is displayed
+    // Step 5: Verify registration form page
     await expect(page).toHaveURL(/.*signup/);
     await expect(registrationPage.registerHeading).toBeVisible();
 
-    // Step 6: Fill in all registration details and submit
+    // Step 6: Fill registration details and submit
     await registrationPage.fillAndSubmitForm(user);
 
     // Step 7: Verify account creation success page
@@ -99,13 +97,13 @@ test.describe('User Registration', () => {
     await expect(accountCreatedPage.accountCreatedHeading).toBeVisible();
     await expect(accountCreatedPage.successMessage).toBeVisible();
 
-    // Step 8: Click Continue to go back to homepage
+    // Step 8: Click Continue to homepage
     await accountCreatedPage.clickContinue();
 
-    // Step 9: Verify the user is now logged in
+    // Step 9: Verify user is logged in
     await expect(homePage.loggedInAsLabel).toContainText(user.name);
 
-    // Step 10: Logout and verify redirect to login page
+    // Step 10: Logout and verify redirect
     await homePage.logout();
     await expect(page).toHaveURL(/.*login/);
     await expect(signupLoginPage.signupHeading).toBeVisible();
@@ -118,8 +116,8 @@ test.describe('User Registration', () => {
    *
    * Steps:
    *  1. Open homepage → Click Signup/Login
-   *  2. Enter the email of the account created in beforeAll (already registered)
-   *  3. Verify the error message "Email Address already exist!" is shown
+   *  2. Enter the email of the account created in beforeAll
+   *  3. Verify error message
    */
   test('TC-REG-002: Should show error when registering with an existing email', async ({
     page,
@@ -140,7 +138,7 @@ test.describe('User Registration', () => {
     await expect(page).toHaveURL(/.*login/);
     await expect(signupLoginPage.signupHeading).toBeVisible();
 
-    // Step 2: Submit with the email of the account pre-created in beforeAll
+    // Step 2: Submit with existing email
     await signupLoginPage.signup(existingUser.name, existingUser.email);
 
     // Step 3: Verify the error message is visible

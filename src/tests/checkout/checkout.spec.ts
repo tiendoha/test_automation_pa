@@ -4,7 +4,7 @@ import { TEST_CARD, ORDER_COMMENT, CHECKOUT_PRODUCTS } from '../../data/checkout
 import { logger } from '../../helpers/common/logger.helper';
 import { feature, story, severity, description } from 'allure-js-commons';
 
-// Dùng session đã lưu bởi auth.setup.ts — không cần login lại
+// Use authenticated session from auth.setup.ts
 test.use({ storageState: ENV.authStatePath });
 
 test.describe('Checkout Flow: Buy Clothes', () => {
@@ -13,19 +13,19 @@ test.describe('Checkout Flow: Buy Clothes', () => {
    * TC-CHECKOUT-001: Happy path — Complete full checkout flow
    *
    * Steps:
-   *  1.  Verify user is logged in on homepage
-   *  2.  Navigate đến trang /products
-   *  3.  Thêm 2 sản phẩm vào giỏ hàng (by name — stable locator)
-   *  4.  Mở giỏ hàng (/view_cart)
-   *  5.  Click "Proceed To Checkout"
-   *  6.  Verify trang checkout loaded
-   *  7.  Verify delivery address hiển thị đúng tên user
-   *  8.  Nhập comment vào order message box
-   *  9.  Click "Place Order"
-   *  10. Verify trang payment loaded
-   *  11. Điền thông tin thẻ thanh toán
+   *  1. Verify logged-in state on homepage
+   *  2. Navigate to /products
+   *  3. Add 2 products to cart by name
+   *  4. Open cart page
+   *  5. Click "Proceed To Checkout"
+   *  6. Verify checkout page loaded
+   *  7. Verify delivery address shows user name
+   *  8. Enter order comment
+   *  9. Click "Place Order"
+   *  10. Verify payment page loaded
+   *  11. Fill payment details
    *  12. Click "Pay and Confirm Order"
-   *  13. Verify "Order Placed!" và confirmation message
+   *  13. Verify "Order Placed!"
    */
   test('TC-CHECKOUT-001: Should complete full checkout flow successfully', async ({
     page,

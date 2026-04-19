@@ -33,18 +33,6 @@ export class ProductsPage {
     await this.page.goto('/products');
   }
 
-  /**
-   * Adds the product at the given 0-based index to the cart by clicking the
-   * overlay "Add to cart" button that appears on hover.
-   *
-   * @param index - 0-based position in the product list
-   * @deprecated Prefer `addProductToCartByName` for a more stable, name-based locator.
-   */
-  async addProductToCartByIndex(index: number): Promise<void> {
-    const card = this.productCards.nth(index);
-    await card.hover();
-    await card.locator('div.overlay-content').getByText('Add to cart').click();
-  }
 
   /**
    * Adds a product to the cart by its exact display name.

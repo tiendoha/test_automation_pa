@@ -1,6 +1,6 @@
 /**
- * Logger utility cho Playwright tests.
- * In log màu sắc rõ ràng ra console để dễ theo dõi kết quả test.
+ * Logger utility for Playwright tests.
+ * Outputs colored logs to the console to track test execution easily.
  *
  * Usage:
  *   import { logger } from '../helpers/common/logger.helper';
@@ -23,9 +23,9 @@ const timestamp = (): string => {
 
 export const logger = {
   /**
-   * In log khi một test case PASS.
-   * @param testId - Test case ID, ví dụ: 'TC-REG-001'
-   * @param description - Mô tả ngắn của test case
+   * Logs a passed test case.
+   * @param testId - Test case ID, e.g., 'TC-REG-001'
+   * @param description - Short test description
    */
   pass(testId: string, description?: string): void {
     const msg = description ? `${testId}: ${description}` : testId;
@@ -33,28 +33,28 @@ export const logger = {
   },
 
   /**
-   * In log thông tin chung trong quá trình chạy test.
+   * Logs general info during test execution.
    */
   info(message: string): void {
     console.log(`${CYAN}[INFO] ${message}${RESET}`);
   },
 
   /**
-   * In log cho từng step đang thực thi.
+   * Logs an execution step.
    */
   step(message: string): void {
     console.log(`${YELLOW}[STEP] ${message}${RESET}`);
   },
 
   /**
-   * In log khi một bước hoặc assertion FAIL (dùng trong debug).
+   * Logs a failed step or assertion.
    */
   fail(message: string): void {
     console.log(`${RED}[FAIL] ${message}${RESET}`);
   },
 
   /**
-   * In log khi setup / teardown hoàn thành.
+   * Logs completion of a setup / teardown block.
    */
   setup(message: string): void {
     console.log(`${BOLD}${YELLOW}[SETUP] ${message}${RESET}  ${CYAN}(${timestamp()})${RESET}`);

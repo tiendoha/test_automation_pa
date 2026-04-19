@@ -3,10 +3,10 @@ import { UserRegistrationData } from '../../data/register/user.data';
 import { logger } from '../common/logger.helper';
 
 /**
- * Tạo một account mới thông qua API POST /api/createAccount
+ * Creates a new account via POST /api/createAccount API.
  *
- * @param apiContext Context được khởi tạo qua request.newContext()
- * @param userData   Thông tin user để tạo
+ * @param apiContext API request context instance.
+ * @param userData User registration data.
  */
 export async function createAccountViaAPI(
   apiContext: APIRequestContext,
@@ -32,7 +32,7 @@ export async function createAccountViaAPI(
     mobile_number: userData.mobileNumber,
   };
 
-  logger.step(`Gửi API tạo account: POST /api/createAccount cho email ${userData.email}`);
+  logger.step(`Sending create account API: POST /api/createAccount for email ${userData.email}`);
 
   const response = await apiContext.post('/api/createAccount', {
     form: formData,
@@ -44,9 +44,9 @@ export async function createAccountViaAPI(
 
   if (responseBody.responseCode !== 201) {
     if (responseBody.message === 'Email already exists!') {
-      logger.info(`Email ${userData.email} đã tồn tại, tiếp tục (hoặc bỏ qua lỗi).`);
+      logger.info(`Email ${userData.email} already exists, continuing.`);
     } else {
-      logger.fail(`Lỗi tạo account API: ${JSON.stringify(responseBody)}`);
+      logger.fail(`API account creation error: ${JSON.stringify(responseBody)}`);
       expect(responseBody.message).toBe('User created!');
     }
   } else {
@@ -55,20 +55,20 @@ export async function createAccountViaAPI(
 }
 
 /**
- * Xóa một account thông qua API DELETE /api/deleteAccount
+ * Deletes an account via DELETE /api/deleteAccount API.
  *
- * Dùng trong afterAll để dọn sạch dữ liệu test sau khi suite hoàn thành.
+ * Used in afterAll to clean up test data after the suite completes.
  *
- * @param apiContext Context được khởi tạo qua request.newContext()
- * @param email      Email của account cần xóa
- * @param password   Password của account cần xóa
+ * @param apiContext API request context instance.
+ * @param email Account email.
+ * @param password Account password.
  */
 export async function deleteAccountViaAPI(
   apiContext: APIRequestContext,
   email: string,
   password: string,
 ): Promise<void> {
-  logger.step(`Gửi API xóa account: DELETE /api/deleteAccount cho email ${email}`);
+  logger.step(`Sending delete account API: DELETE /api/deleteAccount for email ${email}`);
 
   const response = await apiContext.delete('/api/deleteAccount', {
     form: { email, password },
@@ -79,9 +79,9 @@ export async function deleteAccountViaAPI(
   const responseBody = await response.json();
 
   if (responseBody.responseCode === 200) {
-    logger.info(`Account ${email} đã được xóa thành công.`);
+    logger.info(`Account ${email} successfully deleted.`);
   } else {
-    // Nếu account không tồn tại thì bỏ qua (idempotent cleanup)
-    logger.info(`Bỏ qua xóa account ${email}: ${JSON.stringify(responseBody)}`);
+    // Skip if account does not exist (idempotent cleanup)
+    logger.info(`Skipped deleting account ${email}: ${JSON.stringify(responseBody)}`);
   }
 }

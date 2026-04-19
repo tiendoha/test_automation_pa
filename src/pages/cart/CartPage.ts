@@ -31,14 +31,14 @@ export class CartPage {
    * @param productName - The exact product name as shown on the site
    */
   getRowByProductName(productName: string): Locator {
-    // Tối ưu locator: Lọc row chứa link có tên sản phẩm thay vì path HTML cứng
+    // Optimize locator: Filter rows having a link with the product name
     return this.cartRows.filter({
       has: this.page.getByRole('link', { name: productName }),
     });
   }
 
   /**
-   * Lấy các Locator cấu thành thông tin của Product để Assert bên bảng test
+   * Returns locators covering product details for assertions.
    */
   getProductLocators(productName: string) {
     const row = this.getRowByProductName(productName);

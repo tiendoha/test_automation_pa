@@ -1,17 +1,15 @@
 export interface ProductInfo {
-  /** Tên hiển thị của sản phẩm trên trang */
+  /** Product display name. */
   name: string;
-  /** Giá đơn vị, ví dụ: "Rs. 500" */
+  /** Unit price (e.g., "Rs. 500"). */
   price: string;
-  /** Số lượng thêm vào giỏ */
+  /** Quantity to add. */
   quantity: number;
 }
 
 /**
- * Danh sách 2 sản phẩm cần thêm vào giỏ hàng trong test.
- *
- * Product index dựa trên vị trí hiển thị trên /products (bắt đầu từ 0).
- * Thông tin name & price lấy trực tiếp từ trang sản phẩm.
+ * Products to add to cart during tests.
+ * Name and price should match the ones displayed on the products page.
  */
 export const CART_PRODUCTS: ProductInfo[] = [
   {

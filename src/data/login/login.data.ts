@@ -1,6 +1,6 @@
 /**
- * Invalid credentials dùng cho negative test cases.
- * Email hợp lệ được lấy từ account vừa đăng ký trong beforeAll của login.spec.ts
+ * Invalid credentials for negative test cases.
+ * A valid email is fetched from the account registered in the beforeAll of login.spec.ts.
  */
 export const INVALID_CREDENTIALS = {
   wrongPassword: {

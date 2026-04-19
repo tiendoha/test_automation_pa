@@ -6,14 +6,14 @@
  * See `.env.example` for required keys.
  */
 export const ENV = {
-  /** Domain url của dự án */
+  /** Project base URL. */
   baseUrl: process.env.BASE_URL ?? 'https://automationexercise.com',
-  /** Email của test account dùng để login trong checkout tests */
+  /** Test account email for checkout tests. */
   testEmail: process.env.TEST_EMAIL ?? '',
-  /** Password của test account */
+  /** Test account password. */
   testPassword: process.env.TEST_PASSWORD ?? '',
-  /** Username hiển thị trên navbar sau khi login */
+  /** Username displayed on navbar after login. */
   testUsername: process.env.TEST_USERNAME ?? 'Test User',
-  /** Đường dẫn lưu auth state sau khi login */
+  /** Path to save auth state after login. */
   authStatePath: 'playwright/.auth/user.json',
 };
