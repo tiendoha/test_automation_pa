@@ -1,152 +1,159 @@
 # Test Strategy & Coverage — Automation Exercise
 
 > **Target Website:** [https://automationexercise.com](https://automationexercise.com)
-> **Framework:** Playwright 1.59.1 + TypeScript + Page Object Model (POM) + Custom Fixtures
-> **Browser Support:** Chromium, Firefox, WebKit
-> **CI/CD:** GitHub Actions — multi-browser matrix with nightly regression at 08:00 ICT
-> **Reporting:** Playwright HTML Report + Allure Report (deployed to GitHub Pages)
-> **Last Updated:** 2026-04-18
+> **Framework:** Playwright `^1.59.1` + TypeScript + Page Object Model (POM) + Custom Fixtures
+> **Browsers:** Chromium, Firefox, WebKit (Desktop Chrome / Firefox / Safari devices)
+> **CI/CD:** GitHub Actions — 6-project matrix on push/PR and nightly at 01:00 UTC (08:00 ICT)
+> **Reporting:** Playwright HTML Report (artifact, 7-day retention) + Allure Report (deployed to GitHub Pages)
+> **Last Updated:** 2026-04-19
 
 ---
 
 ## 1. Scope of Implemented Automation
 
-### 1.1 Project Architecture
+### 1.1 Project Layout
 
 ```
 src/
-├── configs/          # env.config.ts — centralized ENV management (baseUrl, auth state path)
-├── data/             # Static test data (user, login, cart, checkout) — no hardcoding in specs
-├── fixtures/         # Custom Playwright fixtures that auto-inject all POMs into tests
+├── configs/          env.config.ts — reads BASE_URL / TEST_EMAIL / TEST_PASSWORD / TEST_USERNAME from .env
+├── data/             Static test data (cart, checkout, login, register) — no hardcoded values inside specs
+├── fixtures/         index.ts — Playwright test.extend auto-injecting all 9 POMs
 ├── helpers/
-│   ├── api/          # REST API helpers — create/delete accounts programmatically
-│   └── common/       # logger (colored Allure-aware output), random data generators
-├── pages/            # Page Object Models — one class per page, locators as properties
+│   ├── api/          auth.api.helper.ts — POST /api/createAccount, DELETE /api/deleteAccount
+│   └── common/       logger.helper.ts (colored + Allure-aware), random.helper.ts (unique email generator)
+├── pages/            Page Object Models — 1 class per page, locators declared as readonly properties
 └── tests/
-    ├── auth/         # auth.setup.ts — saves authenticated session to storageState
-    ├── register/     # Register User flows (2 test cases)
-    ├── login/        # Login flows — positive and negative (3 test cases)
-    ├── cart/         # Add-to-cart and cart persistence (2 test cases)
-    └── checkout/     # Full end-to-end checkout with pre-authenticated user (1 test case)
+    ├── auth/         auth.setup.ts — provisions account + logs in once, saves storageState
+    ├── register/     register.spec.ts (2 TCs)
+    ├── login/        login.spec.ts    (3 TCs)
+    ├── cart/         cart.spec.ts     (2 TCs)
+    └── checkout/     checkout.spec.ts (1 TC, requires storageState)
 ```
 
-### 1.2 Automated Test Cases (8 of 26)
+### 1.2 Automated Test Cases (8 tests across 4 suites)
 
-| Suite | Test ID | Description | Allure Severity |
-|-------|---------|-------------|-----------------|
-| Register | TC-REG-001 | Register new user via full UI form, verify account created, then logout | Critical |
-| Register | TC-REG-002 | Attempt registration with existing email, verify duplicate error message | Normal |
-| Login | TC-LOGIN-001 | Login with valid credentials, verify logged-in state, then logout | Critical |
-| Login | TC-LOGIN-002 | Login with correct email but wrong password, verify error message | Normal |
-| Login | TC-LOGIN-003 | Login with non-existent email, verify error message | Minor |
-| Cart | TC-CART-001 | Add 2 products by name, navigate to cart, verify name/price/quantity for each | Critical |
-| Cart | TC-CART-002 | Add 2 products, navigate to cart via direct URL, verify cart persistence | Normal |
-| Checkout | TC-CHECKOUT-001 | Full checkout: add 2 products → cart → checkout → payment → order confirmation | Critical |
+| Suite | Test ID | Description | Severity |
+|-------|---------|-------------|----------|
+| Register | `TC-REG-001` | Full UI registration → Account Created → logged-in label visible → logout | Critical |
+| Register | `TC-REG-002` | Signup with an email pre-created via API, assert "Email Address already exist!" | Normal |
+| Login | `TC-LOGIN-001` | Login with the freshly-created account → verify username in navbar → logout | Critical |
+| Login | `TC-LOGIN-002` | Correct email + wrong password → error message visible, still on `/login` | Normal |
+| Login | `TC-LOGIN-003` | Non-existent email + any password → error message visible | Minor |
+| Cart | `TC-CART-001` | Add "Blue Top" and "Men Tshirt" by name, verify row count, name, price, quantity | Critical |
+| Cart | `TC-CART-002` | Add 2 products, navigate directly to `/view_cart`, verify cart persistence | Normal |
+| Checkout | `TC-CHECKOUT-001` | Authenticated E2E: products → cart → checkout → payment → "Order Placed!" | Critical |
 
-### 1.3 Page Object Models Implemented
+### 1.3 Page Object Models (9 classes, ~1:1 mapping with spec steps)
 
-| Module | POM Class | Responsibility |
-|--------|-----------|----------------|
-| Register | `HomePage` | Navigation, auth-state indicators (logged-in label, logout link) |
-| Register | `SignupLoginPage` | Signup form (name + email) and login form entry points |
-| Register | `RegistrationPage` | Full account creation form (personal info + address + preferences) |
-| Register | `AccountCreatedPage` | Success page verification and Continue button |
-| Login | `LoginPage` | Login form, error message assertion |
-| Cart | `ProductsPage` | Product listing, name-based add-to-cart, modal dismiss/navigate |
-| Cart | `CartPage` | Cart row verification by product name, proceed to checkout |
-| Checkout | `CheckoutPage` | Delivery address verification, order comment, place order |
-| Checkout | `PaymentPage` | Card detail form fill and payment confirmation |
-| Checkout | `OrderConfirmationPage` | Order placed heading and confirmation message assertion |
+| POM Class | File | Key responsibilities |
+|-----------|------|----------------------|
+| `HomePage` | `pages/register/HomePage.ts` | Navbar links (Signup/Login, Logout), `Logged in as <name>` label |
+| `SignupLoginPage` | `pages/register/SignupLoginPage.ts` | Signup (name+email) and Login form entry points |
+| `RegistrationPage` | `pages/register/RegistrationPage.ts` | Full account form: title radios, DOB selects, 2 newsletter checkboxes, address block |
+| `AccountCreatedPage` | `pages/register/AccountCreatedPage.ts` | `ACCOUNT CREATED!` heading + Continue |
+| `LoginPage` | `pages/login/LoginPage.ts` | Login form, `loginErrorMessage` locator |
+| `ProductsPage` | `pages/cart/ProductsPage.ts` | Product grid, `addProductToCartByName`, add-to-cart modal (Continue Shopping / View Cart) |
+| `CartPage` | `pages/cart/CartPage.ts` | Cart rows by product name, per-row name/price/quantity locators, Proceed To Checkout |
+| `CheckoutPage` | `pages/checkout/CheckoutPage.ts` | Delivery/billing address blocks, delivery-address-name line, comment textarea, Place Order |
+| `PaymentPage` | `pages/checkout/PaymentPage.ts` | Card fields via `[data-qa="..."]`, `#submit` pay button |
+| `OrderConfirmationPage` | `pages/checkout/OrderConfirmationPage.ts` | `Order Placed!` heading + confirmation text |
 
-### 1.4 Key Architectural Decisions
+### 1.4 Architectural Decisions (anti-flaky patterns)
 
-**API-First Test Setup (Anti-Flaky Pattern)**
-Test accounts are created via `POST /api/createAccount` in `beforeAll` instead of UI registration. This eliminates ~60% of test setup time and removes a common source of flakiness from repeated form-fill operations. Corresponding `DELETE /api/deleteAccount` calls in `afterAll` prevent data pollution across runs.
+**API-first account provisioning.**
+`register.spec.ts` `beforeAll`, `login.spec.ts` `beforeAll`, and `auth.setup.ts` all call `POST /api/createAccount` with `form` data (see `src/helpers/api/auth.api.helper.ts`). This skips ~20 form fields of UI input per setup. Each suite's `afterAll` issues an idempotent `DELETE /api/deleteAccount` to prevent data pollution — the helper tolerates non-201 responses when an account is already gone.
 
-**Authentication State Persistence**
-`auth.setup.ts` logs in once via UI, saves the full browser session (`cookies + localStorage`) to `playwright/.auth/user.json` using Playwright's `storageState`. The checkout project (`chromium:auth`, `firefox:auth`, `webkit:auth`) reuses this session, skipping login entirely and reducing the checkout test setup by approximately 60%.
+**Storage-state reuse for authenticated tests.**
+`auth.setup.ts` runs as a Playwright `setup` project (declared in `playwright.config.ts`). It provisions the env user via API, logs in through `LoginPage`, and saves cookies + localStorage to `playwright/.auth/user.json`. The three `*:auth` projects (`chromium:auth`, `firefox:auth`, `webkit:auth`) declare `dependencies: ['setup']` and load that `storageState`, which is what `testIgnore: ['**/checkout/**']` on the unauth projects enforces — checkout never runs without the session.
 
-**Name-Based Product Selection**
-Cart operations use `addProductToCartByName(productName)` instead of index-based selectors. This makes tests resilient to product reordering on the website — a real-world risk since the site dynamically serves products.
+**Name-based product selection.**
+`ProductsPage.addProductToCartByName()` filters `.product-image-wrapper` cards by an inner `<p>` matching the exact product name, then hovers and clicks the overlay's Add-to-cart. This avoids index-based flakiness when the site reorders its grid. `CartPage.getProductLocators()` uses the same pattern, filtering cart `<tr>` rows by the product-link role+name.
 
-**Custom Fixtures**
-A single `fixtures/index.ts` file extends Playwright's `test` object to auto-instantiate all POMs. Test files import from fixtures, not from individual page files, keeping spec code clean and import paths stable.
+**Custom fixtures (single import surface).**
+`src/fixtures/index.ts` extends Playwright's `test` to auto-instantiate all 9 POMs as fixtures and re-exports `expect` and `request`. Specs import only from `../../fixtures`, keeping test code free of `new HomePage(page)` plumbing.
 
-**Playwright-Native Assertions Only**
-All assertions use Playwright's built-in auto-retrying assertions (`toHaveText`, `toBeVisible`, `toHaveCount`). Manual `setTimeout` or `waitForTimeout` calls are explicitly avoided to prevent time-dependent flakiness.
+**Auto-retrying assertions only.**
+All assertions use Playwright's built-in auto-retrying matchers (`toBeVisible`, `toHaveURL`, `toHaveText`, `toContainText`, `toHaveCount`, `toBeHidden`). The codebase contains no `page.waitForTimeout` or `setTimeout` calls — commit `ed97829` explicitly removed the last `set_timeout` from `checkout.spec.ts`.
 
-### 1.5 CI/CD Pipeline
+**Centralized env configuration.**
+`src/configs/env.config.ts` is the only module that reads `process.env`. Defaults to `https://automationexercise.com` and `playwright/.auth/user.json` so unauthenticated tests run without `.env`. The authenticated checkout project fails loudly if `TEST_EMAIL`/`TEST_PASSWORD` are missing.
 
-The GitHub Actions workflow runs a 6-job parallel matrix on every push/PR to `main` and nightly at 01:00 UTC (08:00 ICT):
+### 1.5 CI/CD Pipeline (`.github/workflows/playwright.yml`)
 
-| Job | Browsers | Auth State | Test Scope |
-|-----|----------|-----------|------------|
-| Unauthenticated | chromium, firefox, webkit | None | register, login, cart |
-| Authenticated | chromium:auth, firefox:auth, webkit:auth | From setup job | checkout only |
+Triggers: push / PR on `main` or `master`, plus `cron: '0 1 * * *'` (01:00 UTC = 08:00 ICT nightly regression).
 
-Post-run, all Allure results are merged into a single report and deployed to GitHub Pages. Each run uploads Playwright HTML reports as artifacts (7-day retention).
+Matrix (6 jobs, `fail-fast: false`, 30-min timeout each):
+
+| Job | Auth | Test scope | Notes |
+|-----|------|-----------|-------|
+| `chromium`, `firefox`, `webkit` | none | register + login + cart (checkout ignored) | 3 browsers in parallel |
+| `chromium:auth`, `firefox:auth`, `webkit:auth` | `storageState` from setup | checkout only | Each job runs `npx playwright test --project=setup` first to regenerate fresh auth state |
+
+Post-test artifacts: per-job Playwright HTML reports and Allure results (7-day retention). A final `allure-report` job downloads all `allure-results-*` artifacts, merges them via `simple-elf/allure-report-action`, deploys to the `gh-pages` branch via `peaceiris/actions-gh-pages@v3`, and renders a pass/fail matrix into `$GITHUB_STEP_SUMMARY` with a link to the dashboard.
 
 ---
 
 ## 2. Covered and Uncovered Test Cases
 
-The website defines **26 standard test cases**. The table below maps each to its current automation status.
+The website publishes **26 standard test cases** at [/test_cases](https://automationexercise.com/test_cases). Each is mapped below to its current automation status.
 
 ### 2.1 Authentication & Contact (TC 1–7)
 
-| TC | Title | Status | Automated As |
-|----|-------|:------:|-------------|
-| TC 1 | Register User | ✅ Covered | `TC-REG-001` — full form + logout (API cleanup replaces UI Delete Account step) |
-| TC 2 | Login User with correct email and password | ✅ Covered | `TC-LOGIN-001` |
-| TC 3 | Login User with incorrect email and password | ✅ Covered | `TC-LOGIN-002` (wrong password) + `TC-LOGIN-003` (non-existent email) |
-| TC 4 | Logout User | ✅ Covered | Embedded in `TC-LOGIN-001` and `TC-REG-001` post-login verification |
-| TC 5 | Register User with existing email | ✅ Covered | `TC-REG-002` |
-| TC 6 | Contact Us Form | ❌ Not covered | Requires file upload + form submission flow — not yet implemented |
-| TC 7 | Verify Test Cases Page | ❌ Not covered | Navigation + content assertion — not yet implemented |
+| TC | Official title | Status | Mapped to |
+|----|----------------|:------:|-----------|
+| 1 | Register User | ✅ Covered | `TC-REG-001` — full UI form. Final "Delete Account" UI step substituted by `DELETE /api/deleteAccount` in `afterAll`. |
+| 2 | Login User with correct email and password | ✅ Covered | `TC-LOGIN-001` |
+| 3 | Login User with incorrect email and password | ✅ Covered | `TC-LOGIN-002` (wrong password) and `TC-LOGIN-003` (non-existent email) |
+| 4 | Logout User | ✅ Covered | Logout steps are embedded in `TC-REG-001` and `TC-LOGIN-001`; both assert redirect to `/login` |
+| 5 | Register User with existing email | ✅ Covered | `TC-REG-002` — pre-creates user via API, asserts `Email Address already exist!` |
+| 6 | Contact Us Form | ❌ Not covered | Requires `ContactPage` POM + `setInputFiles` for the file upload |
+| 7 | Verify Test Cases Page | ❌ Not covered | Navigation + content assertion on `/test_cases` — trivial but unimplemented |
 
 ### 2.2 Products & Cart (TC 8–13, 17–22)
 
-| TC | Title | Status | Notes |
-|----|-------|:------:|-------|
-| TC 8 | Verify All Products and product detail page | ❌ Not covered | Needs `ProductsPage` expansion + new `ProductDetailPage` POM |
-| TC 9 | Search Product | ❌ Not covered | Needs search input interaction and results verification |
-| TC 10 | Verify Subscription in home page | ❌ Not covered | Newsletter subscription widget on homepage |
-| TC 11 | Verify Subscription in Cart page | ❌ Not covered | Same subscription widget, accessed from cart page |
-| TC 12 | Add Products in Cart | ✅ Covered | `TC-CART-001` — 2 products added, all fields verified |
-| TC 13 | Verify Product quantity in Cart | ❌ Not covered | Quantity selector interaction and verification |
-| TC 17 | Remove Products From Cart | ❌ Not covered | Delete button interaction and empty-cart state assertion |
-| TC 18 | View Category Products | ❌ Not covered | Left-sidebar category navigation not yet implemented |
-| TC 19 | View & Cart Brand Products | ❌ Not covered | Brand filter sidebar not yet implemented |
-| TC 20 | Search Products and Verify Cart After Login | ❌ Not covered | Compound flow: search → add → login → verify cart retained |
-| TC 21 | Add review on product | ❌ Not covered | Product detail page review form |
-| TC 22 | Add to cart from Recommended items | ❌ Not covered | Homepage recommended items section |
+| TC | Official title | Status | Notes |
+|----|----------------|:------:|-------|
+| 8 | Verify All Products and product detail page | ❌ Not covered | Needs `ProductsPage.clickProductByName()` plus a new `ProductDetailPage` POM |
+| 9 | Search Product | ❌ Not covered | No search input interaction implemented |
+| 10 | Verify Subscription in home page | ❌ Not covered | Footer newsletter widget not yet modeled |
+| 11 | Verify Subscription in Cart page | ❌ Not covered | Same widget accessed from cart page |
+| 12 | Add Products in Cart | ✅ Covered | `TC-CART-001` — adds 2 products by name, verifies count + name/price/quantity |
+| 13 | Verify Product quantity in Cart | ❌ Not covered | Quantity selector on product detail not implemented |
+| 17 | Remove Products From Cart | ❌ Not covered | No `removeProductByName` method on `CartPage` |
+| 18 | View Category Products | ❌ Not covered | Left sidebar (category accordion) not modeled |
+| 19 | View & Cart Brand Products | ❌ Not covered | Brand filter sidebar not modeled |
+| 20 | Search Products and Verify Cart After Login | ❌ Not covered | Compound flow depending on TC 9 |
+| 21 | Add review on product | ❌ Not covered | Depends on TC 8 (product detail POM) |
+| 22 | Add to cart from Recommended items | ❌ Not covered | `Recommended items` section on homepage not modeled |
 
 ### 2.3 Checkout & Orders (TC 14–16, 23–24)
 
-| TC | Title | Status | Notes |
-|----|-------|:------:|-------|
-| TC 14 | Place Order: Register while Checkout | ❌ Not covered | Mid-checkout registration flow — most complex path |
-| TC 15 | Place Order: Register before Checkout | ❌ Not covered | Register → add to cart → checkout (without storageState) |
-| TC 16 | Place Order: Login before Checkout | ✅ Covered | `TC-CHECKOUT-001` — full flow using pre-authenticated session |
-| TC 23 | Verify address details in checkout page | ❌ Not covered | `TC-CHECKOUT-001` verifies delivery name only; full address block not asserted |
-| TC 24 | Download Invoice after purchase order | ❌ Not covered | File download assertion after order confirmation |
+| TC | Official title | Status | Notes |
+|----|----------------|:------:|-------|
+| 14 | Place Order: Register while Checkout | ❌ Not covered | Mid-checkout registration path — most complex; requires signup redirect from cart |
+| 15 | Place Order: Register before Checkout | ❌ Not covered | Register → add → checkout without reusing `storageState` |
+| 16 | Place Order: Login before Checkout | ✅ Covered | `TC-CHECKOUT-001` — uses session from `auth.setup.ts` |
+| 23 | Verify address details in checkout page | ⚠️ Partially covered | `TC-CHECKOUT-001` asserts `deliveryAddressName` contains `TEST_USERNAME`, but street/city/state/country/zip/phone are not asserted |
+| 24 | Download Invoice after purchase order | ❌ Not covered | Requires `page.waitForEvent('download')` after order confirmation |
 
 ### 2.4 UI Interactions (TC 25–26)
 
-| TC | Title | Status | Notes |
-|----|-------|:------:|-------|
-| TC 25 | Verify Scroll Up using 'Arrow' button | ❌ Not covered | Scroll-to-top button visibility and behavior |
-| TC 26 | Verify Scroll Up without 'Arrow' button | ❌ Not covered | Manual scroll-up and navbar visibility check |
+| TC | Official title | Status | Notes |
+|----|----------------|:------:|-------|
+| 25 | Verify Scroll Up using 'Arrow' button and Scroll Down functionality | ❌ Not covered | Scroll-to-top arrow visibility + click behavior |
+| 26 | Verify Scroll Up without 'Arrow' button and Scroll Down functionality | ❌ Not covered | Manual scroll back to top + navbar visibility |
 
 ### 2.5 Coverage Summary
 
-| Category | Covered | Total | Coverage |
-|----------|:-------:|:-----:|:--------:|
-| Authentication & Contact | 5 | 7 | 71% |
-| Products & Cart | 1 | 10 | 10% |
-| Checkout & Orders | 1 | 5 | 20% |
-| UI Interactions | 0 | 2 | 0% |
-| **Overall** | **8** | **26** | **31%** |
+| Category | Fully covered | Partial | Total | Coverage |
+|----------|:-------------:|:-------:|:-----:|:--------:|
+| Authentication & Contact (TC 1–7) | 5 | 0 | 7 | 71 % |
+| Products & Cart (TC 8–13, 17–22) | 1 | 0 | 10 | 10 % |
+| Checkout & Orders (TC 14–16, 23–24) | 1 | 1 | 5 | 20 % (+ 1 partial) |
+| UI Interactions (TC 25–26) | 0 | 0 | 2 | 0 % |
+| **Overall** | **7** | **1** | **26** | **27 % fully, 31 % incl. partial** |
+
+*Note:* TC 4 (Logout) is counted toward the Authentication total because logout steps are asserted inside TC 1 and TC 2 flows — there is no standalone `TC-LOGOUT` spec.
 
 ---
 
@@ -154,123 +161,76 @@ The website defines **26 standard test cases**. The table below maps each to its
 
 ### 3.1 Risk Register
 
-| Risk | Probability | Impact | Current Mitigation | Residual Risk |
-|------|:-----------:|:------:|-------------------|:-------------:|
-| **Google Ads overlaying interactive elements** | High | High — causes `ElementClickInterceptedError` or wrong-element click | No dedicated `dismissAds()` helper yet; individual tests handle ad-related failures via retry | High |
-| **Product data changes on website** | Medium | Medium — hardcoded product names/prices in `cart.data.ts` will mismatch | `addProductToCartByName()` decouples selection from index; price/name values in `cart.data.ts` are centralized | Medium |
-| **API endpoint changes (`/api/createAccount`, `/api/deleteAccount`)** | Low | High — all `beforeAll`/`afterAll` setups fail silently if API returns unexpected codes | `auth.api.helper.ts` validates response codes; idempotent delete ignores 404 | Low |
-| **Brittle locators breaking on UI redesign** | Medium | High — test suite fails across all specs | Locators use `getByRole`, `getByText`, `getByPlaceholder` exclusively; zero hardcoded CSS/XPath selectors | Low |
-| **Flaky tests from async UI transitions** | Medium | Medium — intermittent failures degrade CI trust | Playwright's auto-retrying assertions (`toBeVisible`, `toHaveText`) handle transient states; `setTimeout` is banned | Low |
-| **Auth state expiry between CI jobs** | Low | High — checkout tests fail if session cookie expires before `:auth` jobs start | `auth.setup.ts` runs as a dependency of `:auth` jobs and regenerates the session fresh each run | Low |
-| **Data pollution across parallel test runs** | Low | Medium — residual test accounts accumulate | `afterAll` API cleanup is idempotent; UUID-based email generation prevents conflicts between parallel workers | Low |
-| **Cross-browser behavior divergence** | Low | Medium — test passes on Chromium but fails on WebKit/Firefox | All 3 browsers run in CI matrix; a failure in one browser is immediately surfaced | Low |
-| **Checkout test depends on specific product availability** | Medium | High — `TC-CHECKOUT-001` fails if "Blue Top" or "Men Tshirt" are removed from site | Products are long-standing fixtures on the site, but there is no API to verify availability before test run | Medium |
-| **Payment page rendered inside an iframe** | High | High — Playwright's standard locators do not pierce iframes automatically | Payment form is confirmed to be in the main DOM (not an iframe) on `automationexercise.com`; risk applies if payment provider changes | Low |
+| Risk | Probability | Impact | Current mitigation | Residual |
+|------|:-----------:|:------:|-------------------|:--------:|
+| **Google Ads overlaying interactive elements** (the target site serves Google-served display ads on products/home) | High | High — `ElementClickInterceptedError` or clicks landing on the wrong element | None at the moment — there is no shared `dismissAds()` helper; on CI Playwright retries catch most occurrences | High |
+| **Product availability / naming drift** for `Blue Top` and `Men Tshirt` | Medium | High — breaks `TC-CART-001`, `TC-CART-002`, `TC-CHECKOUT-001` simultaneously | Name-based locators decouple selection from index; product names/prices centralized in `cart.data.ts` and `checkout.data.ts` | Medium |
+| **Payment not rendered inside an iframe (today)** | Low | High — if a future payment provider moves the form into an iframe, `PaymentPage` breaks | All card inputs resolve via `[data-qa="…"]` in the main DOM; no iframe handling exists | Low (today) |
+| **Brittle locators from UI redesign** | Medium | High — fails many specs at once | `getByRole` / `getByText` / `[data-qa]` used throughout; no XPath, minimal CSS | Low |
+| **Async UI transitions causing flake** | Medium | Medium | Playwright auto-retrying matchers everywhere; `page.waitForTimeout` forbidden (last occurrence removed in `ed97829`) | Low |
+| **`storageState` expiry between setup and `*:auth` jobs** | Low | High — checkout fails if the session cookie rotates mid-pipeline | Each `*:auth` job re-runs `--project=setup` in its own runner, so state is always fresh within the 30-min `timeout-minutes` | Low |
+| **Data pollution across parallel workers** | Low | Medium | `generateUniqueEmail('testuser')` produces collision-free addresses per worker; `afterAll` API delete is idempotent | Low |
+| **Cross-browser divergence** (Chromium vs WebKit vs Firefox) | Medium | Medium | All three browsers run in the CI matrix with `fail-fast: false`, so a single-browser regression surfaces immediately | Low |
+| **API-endpoint contract changes** (`/api/createAccount`, `/api/deleteAccount`) | Low | High — every setup breaks silently | `createAccountViaAPI` asserts HTTP 200 and checks `responseCode`; tolerates "Email already exists!" so reruns after a bad cleanup still proceed | Medium |
+| **Secrets misconfiguration in CI** (missing `TEST_EMAIL` / `TEST_PASSWORD` / `TEST_USERNAME`) | Low | High — `auth.setup.ts` throws before checkout runs | `auth.setup.ts` validates env vars and raises a descriptive error pointing to `.env.example`; secrets wired from GitHub repo secrets | Low |
+| **Checkout specs run under a single pre-seeded user** | Medium | Medium — one flaky account blocks all 3 `*:auth` jobs | `auth.setup.ts` re-provisions the user via API if missing before each run, so the account self-heals | Low |
 
-### 3.2 Known Limitations
+### 3.2 Known Gaps and Deviations from Standard
 
-**TC 1 Deviation from Standard**
-The standard TC 1 specifies a UI-based "Delete Account" step at the end. The current implementation substitutes this with an API call in `afterAll`. The UI delete flow itself is untested, which means `DELETE /account` functionality via the UI is not verified.
+**TC 1 deviation.** The published TC 1 ends with a UI "Delete Account" step. The implementation replaces this with an `afterAll` API delete. Consequence: the UI delete-account button itself is not exercised by any test.
 
-**TC 16 Address Verification Gap**
-`TC-CHECKOUT-001` verifies the delivery address name (`deliveryAddressName` locator) but does not assert the full address block (street, city, state, country, zip code). TC 23 specifically targets this gap.
+**TC 16 address gap (partial coverage).** `TC-CHECKOUT-001` asserts only `deliveryAddressName` via `ul#address_delivery li.address_firstname.address_lastname`. TC 23's full address-field verification (company, street, city, state, country, zip, phone) is not performed.
 
-**Single Checkout Flow**
-Only the "Login before Checkout" path is automated (TC 16). The two alternative checkout flows — registering during checkout (TC 14) and registering before checkout (TC 15) — are not covered, leaving important user journeys untested.
+**Single checkout path.** Only the "Login before Checkout" variant (TC 16) is automated. The two alternative entry paths — TC 14 (register during) and TC 15 (register before) — remain untested, leaving two out of three documented purchase flows uncovered.
+
+**No validation of negative payment states.** `PaymentPage` has no tests for malformed card numbers, invalid CVC, or expired cards. Since `automationexercise.com` accepts any format (it is a demo), this is a low-priority gap, but it should be called out in any real-commerce adaptation.
 
 ---
 
 ## 4. Improvement Proposals
 
-The following improvements are ordered by business impact and implementation effort. Each can be applied incrementally using the existing codebase architecture without structural changes.
+Ordered by expected value × ease of implementation within the existing architecture. Each item below can be delivered incrementally without structural changes to fixtures or configs.
 
-### Phase 1 — High Priority: Core Product & Cart Flows
+### Phase 1 — High priority (stabilize what exists, then unlock new TCs)
 
-*These flows are prerequisites for TC 14, TC 15, and TC 23 checkout scenarios.*
+1. **Shared `dismissAds()` helper** — register it as a `beforeEach` in the base fixture and/or call it before critical clicks. This is the single highest-leverage reliability fix for CI runs against a live ad-serving site. *(~0.5 day)*
+2. **`ProductDetailPage` POM (unblocks TC 8, 13, 21)** — adds a `clickProductByName(name)` to `ProductsPage` and models name, category, price, availability, condition, brand, quantity selector, and review form on the detail page. *(~1 day)*
+3. **`CartPage.removeProductByName(name)` (TC 17)** — adds a delete-row action and an empty-cart assertion. *(~0.5 day)*
+4. **Search support on `ProductsPage` (TC 9)** — `searchProduct(query)` + `getSearchResults()` — also the prerequisite for TC 20. *(~0.5 day)*
+5. **Full address assertion in checkout (TC 23, closes TC 16 partial)** — extend `CheckoutPage` locators to the full `ul#address_delivery` line items and assert each against `user.data.ts`. *(~0.5 day)*
 
-**Add a `dismissAds()` helper function**
-Write a shared utility that detects and closes Google Ad overlays before critical interactions. Register it as a global `beforeEach` or call it explicitly before `click()` and `hover()` actions. This is the single highest-leverage fix for reducing flaky failures in CI.
+### Phase 2 — Medium priority (complete the checkout variants)
 
-**TC 8 — Product Detail Page**
-Extend `ProductsPage` with a `clickProductByName(name)` method. Create a new `ProductDetailPage` POM covering product name, category, price, availability, condition, and brand locators. This unblocks TC 21 (reviews) as well.
+6. **TC 15: Register before Checkout** — compose the existing register flow with the checkout flow, but without pre-loaded `storageState`. Largely reuses `RegistrationPage` and `CheckoutPage`. *(~1 day)*
+7. **TC 14: Register during Checkout** — the most complex path: guest add-to-cart → click Register/Login on `/checkout` → signup → continue checkout. Needs a small `GuestCheckoutPage` or `CheckoutPage` extension for the "not logged in" view. *(~2 days)*
+8. **TC 24: Download Invoice** — use `page.waitForEvent('download')` after order confirmation, assert the filename ends in `.txt` (or `.pdf` depending on site version) and the suggested filename is non-empty. *(~1 day)*
 
-**TC 9 — Search Products**
-Add a `searchProduct(query)` method to `ProductsPage` and a `getSearchResults()` method returning product name locators. Required as a building block for TC 20.
+### Phase 3 — Supporting features
 
-**TC 17 — Remove Products From Cart**
-Add a `removeProductByName(name)` method to `CartPage`. Assert the row disappears and verify the empty-cart state message.
+9. **TC 6: Contact Us Form** — new `ContactPage`, `fileInput.setInputFiles(...)`, assert `Success! Your details have been submitted successfully.` *(~1 day)*
+10. **TC 7: Verify Test Cases Page** — simple navigation + heading assertion. *(~0.25 day)*
+11. **TC 10 + TC 11: Subscription widget** — extract a `SubscriptionComponent` used from both `HomePage` and `CartPage` to avoid duplication. *(~0.5 day)*
+12. **TC 18 + TC 19: Category / Brand filters** — share a `SidebarComponent` for the left-nav filters. *(~1 day)*
+13. **TC 20: Cart persistence after login** — search → add-as-guest → login → assert cart retained. Exercises session-merge behavior. *(~1 day)*
+14. **TC 21 + TC 22: Reviews + Recommended items** — both depend on Phase 1 item #2 (`ProductDetailPage`). *(~1.5 days)*
+15. **TC 25 + TC 26: Scroll interactions** — `page.evaluate` + arrow-button visibility / navbar-visibility checks. *(~0.5 day)*
 
-**TC 13 — Verify Product Quantity in Cart**
-Add a `setQuantityByName(name, quantity)` interaction to `ProductDetailPage` and extend `CartPage` to assert the resulting quantity column value.
+### Phase 4 — Infrastructure & quality investments
 
-### Phase 2 — Medium Priority: Checkout Flow Completeness
+16. **Centralized ad-dismissal hook** — once `dismissAds()` is stable, move it into a `beforeEach` in `src/fixtures/index.ts` to remove the concern from individual specs.
+17. **Visual regression coverage** — `toHaveScreenshot()` for homepage, product listing, and `Order Placed!` pages, gated behind a separate CI job so diffs do not block functional merges.
+18. **Lightweight API layer** — extend `auth.api.helper.ts` into an `api/` suite covering `/api/productsList`, `/api/searchProduct`, `/api/getUserDetailByEmail`, etc. Quick feedback loop independent of UI stability.
+19. **Negative payment scenarios** — although not part of the 26 standard TCs, add malformed-card / expired-card / short-CVC cases around `PaymentPage` to harden the most business-critical flow.
+20. **Test-data parameterization** — replace the two hardcoded product names (`Blue Top`, `Men Tshirt`) with a discovery step that picks the first two in-stock products via `/api/productsList`, removing the product-availability risk.
+21. **Sharding** — once suite count grows past ~30 tests, enable Playwright sharding in CI to keep the 30-minute per-job budget.
 
-**TC 23 — Full Address Verification**
-Extend `CheckoutPage` locators to cover all address fields (first/last name, company, address lines, city, state, country, zip, phone). Assert each against the registered user's data stored in `env.config.ts` or `user.data.ts`.
+### 4.1 Effort Summary
 
-**TC 14 — Register While Checkout**
-This is the most complex flow: add products as a guest → proceed to checkout → register mid-flow. It requires a new `GuestCheckoutPage` POM or an extension of `CheckoutPage`. The existing `RegistrationPage` POM can be reused once redirected to signup.
-
-**TC 15 — Register Before Checkout**
-Combine existing `TC-REG-001` setup (API account creation) with the checkout flow from `TC-CHECKOUT-001`. The primary difference from `TC-CHECKOUT-001` is that no pre-saved `storageState` is used — login happens inline within the test.
-
-**TC 24 — Download Invoice**
-Use Playwright's `Download` event (`page.waitForEvent('download')`) to intercept the invoice file download after order confirmation. Assert the downloaded filename matches a PDF pattern and the file size is non-zero.
-
-### Phase 3 — Lower Priority: Supporting Features
-
-**TC 6 — Contact Us Form**
-Create a `ContactPage` POM. The form includes a file upload field, requiring `fileInput.setInputFiles()`. Assert the success message "Success! Your details have been submitted successfully." appears after submission.
-
-**TC 10 / TC 11 — Subscription Widget**
-The subscription widget appears on both the homepage and the cart page. Extract a shared `SubscriptionComponent` helper (not a full POM) with a `subscribe(email)` method. This avoids duplication between TC 10 and TC 11.
-
-**TC 18 / TC 19 — Category and Brand Filters**
-Create a `SidebarComponent` for the left navigation panel shared across product listing pages. Implement `selectCategory(women/men/kids, subcategory)` and `selectBrand(brandName)` methods. Both TCs share this component.
-
-**TC 20 — Search Cart Persistence After Login**
-Compose TC 9 (search) and TC-LOGIN-001 (login) into a single flow: search for a product → add to cart → log in → verify the cart still contains the product. Tests session-storage cart merging behavior.
-
-**TC 21 — Product Review**
-Extend `ProductDetailPage` with a review form section: `nameInput`, `emailInput`, `reviewTextarea`, `submitButton`, and a success message locator. Gate this test on a logged-in user fixture.
-
-**TC 22 — Recommended Items**
-Add a `RecommendedItemsSection` to `HomePage` or create a scroll-to-section helper. Use `addRecommendedItemByIndex(0)` and verify the item appears in the cart.
-
-**TC 25 / TC 26 — Scroll Interactions**
-Use `page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))` to scroll to the bottom. For TC 25, assert the scroll-arrow button becomes visible and click it to scroll back to top. For TC 26, assert the navbar is visible after scrolling back to top without the button.
-
-### 4.1 Infrastructure Improvements
-
-**Ad-Dismissal Guard (Global)**
-Centralize ad detection into a `beforeEach` hook in the base fixture. This eliminates the need for per-test ad handling and reduces the noise in failure logs.
-
-**Visual Regression Testing**
-Integrate `@playwright/test`'s built-in `toHaveScreenshot()` for critical pages (homepage, product listing, order confirmation). Run visual diff checks as a separate CI job to catch unintended UI regressions.
-
-**API Contract Testing**
-The automation already calls `/api/createAccount` and `/api/deleteAccount`. Extend `auth.api.helper.ts` to also test `/api/productsList`, `/api/searchProduct`, and `/api/getUserDetailByEmail` to build a lightweight API test layer alongside the UI suite.
-
-**Negative Checkout Flows**
-Add negative scenarios to the checkout suite: invalid card number format, expired card, mismatched CVC. These are not part of the 26 standard TCs but represent critical regression coverage for the payment flow.
-
-### 4.2 Effort Estimate
-
-| Item | Estimated Effort | Priority |
-|------|:----------------:|:--------:|
-| `dismissAds()` global helper | 0.5 day | Critical |
-| TC 8 — Product detail POM | 1 day | High |
-| TC 9, TC 17, TC 13 — Cart operations | 1.5 days | High |
-| TC 23 — Full address assertion | 0.5 day | High |
-| TC 15, TC 16 extension (address) | 0.5 day | Medium |
-| TC 14 — Register during checkout | 2 days | Medium |
-| TC 24 — Invoice download | 1 day | Medium |
-| TC 6 — Contact Us with file upload | 1 day | Low |
-| TC 10, TC 11 — Subscription widget | 0.5 day | Low |
-| TC 18, TC 19 — Category/Brand filter | 1 day | Low |
-| TC 20 — Cart persistence after login | 1 day | Low |
-| TC 21, TC 22 — Review + Recommended | 1.5 days | Low |
-| TC 25, TC 26 — Scroll interactions | 0.5 day | Low |
-| Visual regression setup | 1 day | Optional |
-| API contract tests | 1 day | Optional |
-| **Total to reach 26/26 TC coverage** | **~13 days** | — |
+| Phase | Items | Estimate |
+|-------|-------|:--------:|
+| Phase 1 — Stabilization & unlock | 5 items | ~3 days |
+| Phase 2 — Checkout completeness | 3 items | ~4 days |
+| Phase 3 — Supporting features | 7 items | ~5.75 days |
+| Phase 4 — Infra & quality (optional, non-TC) | 6 items | ~3 days |
+| **Total to reach full 26 / 26 coverage** | **15 items** | **~12.75 days** |
+| **Full scope including Phase 4 hardening** | **21 items** | **~15.75 days** |
