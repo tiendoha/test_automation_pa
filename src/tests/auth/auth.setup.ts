@@ -1,6 +1,6 @@
 import { test as setup, request, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/login/LoginPage';
-import { HomePage } from '../../pages/register/HomePage';
+import { HomePage } from '../../pages/home-page/HomePage';
 import { ENV } from '../../configs/env.config';
 import { logger } from '../../helpers/common/logger.helper';
 import { createAccountViaAPI } from '../../helpers/api/auth.api.helper';
