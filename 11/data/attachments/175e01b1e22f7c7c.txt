@@ -1,2 +1,0 @@
-[INFO] Auth setup bắt đầu với account: qa.automation.tester@mailtest.com
-[STEP] Gửi API tạo account: POST /api/createAccount cho email qa.automation.tester@mailtest.com

@@ -1,1 +1,0 @@
-[STEP] Gửi API tạo account: POST /api/createAccount cho email testuser_3d16f43d@mailtest.com

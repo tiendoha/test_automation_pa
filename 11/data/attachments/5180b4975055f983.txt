@@ -1,3 +1,0 @@
-[STEP] Gửi API tạo account: POST /api/createAccount cho email testuser_4213e4fd@mailtest.com
-[SETUP] beforeAll: Account đã được tạo qua API và sẵn sàng cho login tests  (2026-04-18 05:12:47.119)
-[PASS] TC-LOGIN-001: Should login successfully with the newly registered account  (2026-04-18 05:12:49.372)
