@@ -1,7 +1,0 @@
-[INFO] Auth setup bắt đầu với account: qa.automation.tester@mailtest.com
-[STEP] Gửi API tạo account: POST /api/createAccount cho email qa.automation.tester@mailtest.com
-[INFO] Email qa.automation.tester@mailtest.com đã tồn tại, tiếp tục (hoặc bỏ qua lỗi).
-[STEP] Navigate đến /login
-[STEP] Đăng nhập với email: qa.automation.tester@mailtest.com
-[STEP] Verify login thành công trên homepage
-[SETUP] Auth state đã được lưu tại: playwright/.auth/user.json  (2026-04-18 11:33:21.008)

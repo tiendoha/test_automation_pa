@@ -1,4 +1,0 @@
-[PASS] TC-LOGIN-003: Should show error when logging in with non-existent email  (2026-04-18 11:33:22.443)
-[STEP] Gửi API xóa account: DELETE /api/deleteAccount cho email testuser_da2aec2f@mailtest.com
-[INFO] Account testuser_da2aec2f@mailtest.com đã được xóa thành công.
-[INFO] afterAll: registeredUser đã được xóa qua API
