@@ -1,1 +1,0 @@
-[PASS] TC-CART-002: Cart should still contain products after navigating directly to cart  (2026-04-19 02:48:08.817)
