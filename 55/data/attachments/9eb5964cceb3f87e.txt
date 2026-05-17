@@ -1,0 +1,2 @@
+[INFO] Auth setup starting with account: qa.automation.tester@mailtest.com
+[STEP] Sending create account API: POST /api/createAccount for email qa.automation.tester@mailtest.com
