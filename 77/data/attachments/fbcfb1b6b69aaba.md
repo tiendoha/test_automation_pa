@@ -1,0 +1,166 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: cart/cart.spec.ts >> Add Product To Cart >> TC-CART-001: Should add 2 products to cart and verify their details
+- Location: src/tests/cart/cart.spec.ts:34:7
+
+# Error details
+
+```
+Test timeout of 30000ms exceeded.
+```
+
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e5]:
+      - link "Website for automation practice" [ref=e8]:
+        - /url: /
+        - img "Website for automation practice" [ref=e9]
+      - list [ref=e12]:
+        - listitem [ref=e13]:
+          - link " Home" [ref=e14]:
+            - /url: /
+            - generic [ref=e15]: 
+            - text: Home
+        - listitem [ref=e16]:
+          - link " Products" [ref=e17]:
+            - /url: /products
+            - generic [ref=e18]: 
+            - text: Products
+        - listitem [ref=e19]:
+          - link " Cart" [ref=e20]:
+            - /url: /view_cart
+            - generic [ref=e21]: 
+            - text: Cart
+        - listitem [ref=e22]:
+          - link " Signup / Login" [ref=e23]:
+            - /url: /login
+            - generic [ref=e24]: 
+            - text: Signup / Login
+        - listitem [ref=e25]:
+          - link " Test Cases" [ref=e26]:
+            - /url: /test_cases
+            - generic [ref=e27]: 
+            - text: Test Cases
+        - listitem [ref=e28]:
+          - link " API Testing" [ref=e29]:
+            - /url: /api_list
+            - generic [ref=e30]: 
+            - text: API Testing
+        - listitem [ref=e31]:
+          - link " Video Tutorials" [ref=e32]:
+            - /url: https://www.youtube.com/c/AutomationExercise
+            - generic [ref=e33]: 
+            - text: Video Tutorials
+        - listitem [ref=e34]:
+          - link " Contact us" [ref=e35]:
+            - /url: /contact_us
+            - generic [ref=e36]: 
+            - text: Contact us
+  - generic [ref=e38]:
+    - list [ref=e40]:
+      - listitem [ref=e41]:
+        - link "Home" [ref=e42]:
+          - /url: /
+      - listitem [ref=e43]: Shopping Cart
+    - generic [ref=e48] [cursor=pointer]: Proceed To Checkout
+    - table [ref=e50]:
+      - rowgroup [ref=e51]:
+        - row "Item Description Price Quantity Total" [ref=e52]:
+          - cell "Item" [ref=e53]
+          - cell "Description" [ref=e54]
+          - cell "Price" [ref=e55]
+          - cell "Quantity" [ref=e56]
+          - cell "Total" [ref=e57]
+          - cell [ref=e58]
+      - rowgroup [ref=e59]:
+        - row "Product Image Blue Top Women > Tops Rs. 500 1 Rs. 500 " [ref=e60]:
+          - cell "Product Image" [ref=e61]:
+            - link "Product Image" [ref=e62]:
+              - /url: ""
+              - img "Product Image" [ref=e63]
+          - cell "Blue Top Women > Tops" [ref=e64]:
+            - heading "Blue Top" [level=4] [ref=e65]:
+              - link "Blue Top" [ref=e66]:
+                - /url: /product_details/1
+            - paragraph [ref=e67]: Women > Tops
+          - cell "Rs. 500" [ref=e68]:
+            - paragraph [ref=e69]: Rs. 500
+          - cell "1" [ref=e70]:
+            - button "1" [ref=e71] [cursor=pointer]
+          - cell "Rs. 500" [ref=e72]:
+            - paragraph [ref=e73]: Rs. 500
+          - cell "" [ref=e74]:
+            - generic [ref=e76] [cursor=pointer]: 
+        - row "Product Image Men Tshirt Men > Tshirts Rs. 400 1 Rs. 400 " [ref=e77]:
+          - cell "Product Image" [ref=e78]:
+            - link "Product Image" [ref=e79]:
+              - /url: ""
+              - img "Product Image" [ref=e80]
+          - cell "Men Tshirt Men > Tshirts" [ref=e81]:
+            - heading "Men Tshirt" [level=4] [ref=e82]:
+              - link "Men Tshirt" [ref=e83]:
+                - /url: /product_details/2
+            - paragraph [ref=e84]: Men > Tshirts
+          - cell "Rs. 400" [ref=e85]:
+            - paragraph [ref=e86]: Rs. 400
+          - cell "1" [ref=e87]:
+            - button "1" [ref=e88] [cursor=pointer]
+          - cell "Rs. 400" [ref=e89]:
+            - paragraph [ref=e90]: Rs. 400
+          - cell "" [ref=e91]:
+            - generic [ref=e93] [cursor=pointer]: 
+    - insertion [ref=e95]:
+      - iframe [ref=e97]:
+        - generic [active] [ref=f21e1]:
+          - generic [ref=f21e6]:
+            - generic [ref=f21e7]:
+              - generic "rts" [ref=f21e9]:
+                - link "C0ntinue" [ref=f21e10] [cursor=pointer]:
+                  - /url: https://googleads.g.doubleclick.net/aclk?sa=l&ai=CTCG73lEmat7UK4HvuvQPxb_GkAr01OCNhwHf1cmq-BXEhIWeCxABIP20npUBYKECoAHIr4PSQ8gBAagDAcgDywSqBO8BT9Azr2oiEo_hGXicGqjmlQdu3bUR7DM3NKzO0-dhRmgEHytnWChRwaieieZKVY15ueh4rQiVn53Lwtq-CWM-HRZZRGlLOrrsA5s6Rkt5QYVZRIZRHuOexFfAhxUSkxg5SREF1P5E5ezww8F9uPM0vm9Blwn-_qcsI2cB-hkwm-OFjM1ug5-cLv4KdRfMb8M4ssWfxNFM-bNuZaEnPGeqwOKfxSeOrnkV-qV4JlA55oGj1aHFZtRE0RmRt_Ya280A5R34BV0CjVfWAPC9z1_u3LyLuVYmFtWrSZLX55yK-xAy24WzM85drSDR5ydntpjABP7jyLHXBYgF79rt7FiAB8jn07EeqAenzLECqAemvhuoB8zOsQKoB_PRG6gHltgbqAeqm7ECqAeOzhuoB5PYG6gH8OAbqAfulrECqAf-nrECqAevvrECqAfVyRuoB9m2sQKoB5oGqAf_nrECqAffn7ECqAf4wrECqAf7wrEC2AcB0ggzCIBhEAEYnwMyCIqCgICAgIAIOg-AQIDAgICAgKiAAqiDgBBIvf3BOljk__G18_aUA2ABsQkreWOHjmJUY4AKAZgLAcgLAaoNAkdIyA0B6g0TCNTB8rXz9pQDFYG3jggdxZ8RoogOCdgTAogUAdAVAcoWAgoA-BYBgBcBshcEGAFQBroXAjgBshgJEgLRTxgBIgEA0BgBshkBN8IZAggB&gclid=EAIaIQobChMI3rvytfP2lAMVgbeOCB3FnxGiEAEYASAAEgLnEPD_BwE&num=1&cid=CAQSiAIAEQoqgb0vNC-gq-hKnlElH45N2PvWkG4aP7fIWHFfSXoptGJbdIjyPy-zzxRpEtZCqXMasTLKhap7Cz8lgQHgFr9MygzfibMiDgwIzXyY9vpH-gK3gtc6VHcFZgC9v0F8tIJJI6Y3u4C2KqTloqeUjVYMXbzYxL-XOl85ohcDH9ji70zbd93e0K2jiBi17SYYduu9gB3ycbTOH_e2IYXrk_W225Wooxc2zQx5BHpxG5ewLfj1_2HYFgI5xW3gsk3hC51t-o4y1a77QDjgNbe4_ShAuzS2WJqshQN3v678nATp8PDYhX7iGsHILbcZhjGb_gmg7DfINN_fUVQL463tb0lwrNAUR0YYAQ&sig=AOD64_2TxKg42qNI-FBe5gexf6J-3A9F8w&client=ca-pub-1677597403311019&rf=1&nb=0&adurl=https://ransontireshops.com/%3Fgad_source%3D5%26gad_campaignid%3D23850610031
+              - generic [ref=f21e11]:
+                - link "Click here to C0ntinue" [ref=f21e13] [cursor=pointer]:
+                  - /url: https://googleads.g.doubleclick.net/aclk?sa=l&ai=CTCG73lEmat7UK4HvuvQPxb_GkAr01OCNhwHf1cmq-BXEhIWeCxABIP20npUBYKECoAHIr4PSQ8gBAagDAcgDywSqBO8BT9Azr2oiEo_hGXicGqjmlQdu3bUR7DM3NKzO0-dhRmgEHytnWChRwaieieZKVY15ueh4rQiVn53Lwtq-CWM-HRZZRGlLOrrsA5s6Rkt5QYVZRIZRHuOexFfAhxUSkxg5SREF1P5E5ezww8F9uPM0vm9Blwn-_qcsI2cB-hkwm-OFjM1ug5-cLv4KdRfMb8M4ssWfxNFM-bNuZaEnPGeqwOKfxSeOrnkV-qV4JlA55oGj1aHFZtRE0RmRt_Ya280A5R34BV0CjVfWAPC9z1_u3LyLuVYmFtWrSZLX55yK-xAy24WzM85drSDR5ydntpjABP7jyLHXBYgF79rt7FiAB8jn07EeqAenzLECqAemvhuoB8zOsQKoB_PRG6gHltgbqAeqm7ECqAeOzhuoB5PYG6gH8OAbqAfulrECqAf-nrECqAevvrECqAfVyRuoB9m2sQKoB5oGqAf_nrECqAffn7ECqAf4wrECqAf7wrEC2AcB0ggzCIBhEAEYnwMyCIqCgICAgIAIOg-AQIDAgICAgKiAAqiDgBBIvf3BOljk__G18_aUA2ABsQkreWOHjmJUY4AKAZgLAcgLAaoNAkdIyA0B6g0TCNTB8rXz9pQDFYG3jggdxZ8RoogOCdgTAogUAdAVAcoWAgoA-BYBgBcBshcEGAFQBroXAjgBshgJEgLRTxgBIgEA0BgBshkBN8IZAggB&gclid=EAIaIQobChMI3rvytfP2lAMVgbeOCB3FnxGiEAEYASAAEgLnEPD_BwE&num=1&cid=CAQSiAIAEQoqgb0vNC-gq-hKnlElH45N2PvWkG4aP7fIWHFfSXoptGJbdIjyPy-zzxRpEtZCqXMasTLKhap7Cz8lgQHgFr9MygzfibMiDgwIzXyY9vpH-gK3gtc6VHcFZgC9v0F8tIJJI6Y3u4C2KqTloqeUjVYMXbzYxL-XOl85ohcDH9ji70zbd93e0K2jiBi17SYYduu9gB3ycbTOH_e2IYXrk_W225Wooxc2zQx5BHpxG5ewLfj1_2HYFgI5xW3gsk3hC51t-o4y1a77QDjgNbe4_ShAuzS2WJqshQN3v678nATp8PDYhX7iGsHILbcZhjGb_gmg7DfINN_fUVQL463tb0lwrNAUR0YYAQ&sig=AOD64_2TxKg42qNI-FBe5gexf6J-3A9F8w&client=ca-pub-1677597403311019&rf=1&nb=7&adurl=https://ransontireshops.com/%3Fgad_source%3D5%26gad_campaignid%3D23850610031
+                - link [ref=f21e14] [cursor=pointer]:
+                  - /url: https://googleads.g.doubleclick.net/aclk?sa=l&ai=CTCG73lEmat7UK4HvuvQPxb_GkAr01OCNhwHf1cmq-BXEhIWeCxABIP20npUBYKECoAHIr4PSQ8gBAagDAcgDywSqBO8BT9Azr2oiEo_hGXicGqjmlQdu3bUR7DM3NKzO0-dhRmgEHytnWChRwaieieZKVY15ueh4rQiVn53Lwtq-CWM-HRZZRGlLOrrsA5s6Rkt5QYVZRIZRHuOexFfAhxUSkxg5SREF1P5E5ezww8F9uPM0vm9Blwn-_qcsI2cB-hkwm-OFjM1ug5-cLv4KdRfMb8M4ssWfxNFM-bNuZaEnPGeqwOKfxSeOrnkV-qV4JlA55oGj1aHFZtRE0RmRt_Ya280A5R34BV0CjVfWAPC9z1_u3LyLuVYmFtWrSZLX55yK-xAy24WzM85drSDR5ydntpjABP7jyLHXBYgF79rt7FiAB8jn07EeqAenzLECqAemvhuoB8zOsQKoB_PRG6gHltgbqAeqm7ECqAeOzhuoB5PYG6gH8OAbqAfulrECqAf-nrECqAevvrECqAfVyRuoB9m2sQKoB5oGqAf_nrECqAffn7ECqAf4wrECqAf7wrEC2AcB0ggzCIBhEAEYnwMyCIqCgICAgIAIOg-AQIDAgICAgKiAAqiDgBBIvf3BOljk__G18_aUA2ABsQkreWOHjmJUY4AKAZgLAcgLAaoNAkdIyA0B6g0TCNTB8rXz9pQDFYG3jggdxZ8RoogOCdgTAogUAdAVAcoWAgoA-BYBgBcBshcEGAFQBroXAjgBshgJEgLRTxgBIgEA0BgBshkBN8IZAggB&gclid=EAIaIQobChMI3rvytfP2lAMVgbeOCB3FnxGiEAEYASAAEgLnEPD_BwE&num=1&cid=CAQSiAIAEQoqgb0vNC-gq-hKnlElH45N2PvWkG4aP7fIWHFfSXoptGJbdIjyPy-zzxRpEtZCqXMasTLKhap7Cz8lgQHgFr9MygzfibMiDgwIzXyY9vpH-gK3gtc6VHcFZgC9v0F8tIJJI6Y3u4C2KqTloqeUjVYMXbzYxL-XOl85ohcDH9ji70zbd93e0K2jiBi17SYYduu9gB3ycbTOH_e2IYXrk_W225Wooxc2zQx5BHpxG5ewLfj1_2HYFgI5xW3gsk3hC51t-o4y1a77QDjgNbe4_ShAuzS2WJqshQN3v678nATp8PDYhX7iGsHILbcZhjGb_gmg7DfINN_fUVQL463tb0lwrNAUR0YYAQ&sig=AOD64_2TxKg42qNI-FBe5gexf6J-3A9F8w&client=ca-pub-1677597403311019&rf=1&nb=8&adurl=https://ransontireshops.com/%3Fgad_source%3D5%26gad_campaignid%3D23850610031
+                  - img [ref=f21e15]
+            - generic "rts" [ref=f21e17]:
+              - link "rts" [ref=f21e18] [cursor=pointer]:
+                - /url: https://googleads.g.doubleclick.net/aclk?sa=l&ai=CTCG73lEmat7UK4HvuvQPxb_GkAr01OCNhwHf1cmq-BXEhIWeCxABIP20npUBYKECoAHIr4PSQ8gBAagDAcgDywSqBO8BT9Azr2oiEo_hGXicGqjmlQdu3bUR7DM3NKzO0-dhRmgEHytnWChRwaieieZKVY15ueh4rQiVn53Lwtq-CWM-HRZZRGlLOrrsA5s6Rkt5QYVZRIZRHuOexFfAhxUSkxg5SREF1P5E5ezww8F9uPM0vm9Blwn-_qcsI2cB-hkwm-OFjM1ug5-cLv4KdRfMb8M4ssWfxNFM-bNuZaEnPGeqwOKfxSeOrnkV-qV4JlA55oGj1aHFZtRE0RmRt_Ya280A5R34BV0CjVfWAPC9z1_u3LyLuVYmFtWrSZLX55yK-xAy24WzM85drSDR5ydntpjABP7jyLHXBYgF79rt7FiAB8jn07EeqAenzLECqAemvhuoB8zOsQKoB_PRG6gHltgbqAeqm7ECqAeOzhuoB5PYG6gH8OAbqAfulrECqAf-nrECqAevvrECqAfVyRuoB9m2sQKoB5oGqAf_nrECqAffn7ECqAf4wrECqAf7wrEC2AcB0ggzCIBhEAEYnwMyCIqCgICAgIAIOg-AQIDAgICAgKiAAqiDgBBIvf3BOljk__G18_aUA2ABsQkreWOHjmJUY4AKAZgLAcgLAaoNAkdIyA0B6g0TCNTB8rXz9pQDFYG3jggdxZ8RoogOCdgTAogUAdAVAcoWAgoA-BYBgBcBshcEGAFQBroXAjgBshgJEgLRTxgBIgEA0BgBshkBN8IZAggB&gclid=EAIaIQobChMI3rvytfP2lAMVgbeOCB3FnxGiEAEYASAAEgLnEPD_BwE&num=1&cid=CAQSiAIAEQoqgb0vNC-gq-hKnlElH45N2PvWkG4aP7fIWHFfSXoptGJbdIjyPy-zzxRpEtZCqXMasTLKhap7Cz8lgQHgFr9MygzfibMiDgwIzXyY9vpH-gK3gtc6VHcFZgC9v0F8tIJJI6Y3u4C2KqTloqeUjVYMXbzYxL-XOl85ohcDH9ji70zbd93e0K2jiBi17SYYduu9gB3ycbTOH_e2IYXrk_W225Wooxc2zQx5BHpxG5ewLfj1_2HYFgI5xW3gsk3hC51t-o4y1a77QDjgNbe4_ShAuzS2WJqshQN3v678nATp8PDYhX7iGsHILbcZhjGb_gmg7DfINN_fUVQL463tb0lwrNAUR0YYAQ&sig=AOD64_2TxKg42qNI-FBe5gexf6J-3A9F8w&client=ca-pub-1677597403311019&rf=1&nb=1&adurl=https://ransontireshops.com/%3Fgad_source%3D5%26gad_campaignid%3D23850610031
+          - img [ref=f21e22] [cursor=pointer]
+          - button [ref=f21e24] [cursor=pointer]:
+            - img [ref=f21e25]
+          - iframe
+  - contentinfo [ref=e98]:
+    - generic [ref=e103]:
+      - heading "Subscription" [level=2] [ref=e104]
+      - generic [ref=e105]:
+        - textbox "Your email address" [ref=e106]
+        - button "" [ref=e107] [cursor=pointer]:
+          - generic [ref=e108]: 
+        - paragraph [ref=e109]:
+          - text: Get the most recent updates from
+          - text: our site and be updated your self...
+    - paragraph [ref=e113]: Copyright © 2021 All rights reserved
+  - text: 
+  - insertion [ref=e114]:
+    - iframe [ref=e117]:
+      - iframe [ref=f29e1]:
+        - generic [ref=f33e2]:
+          - link "Advertisement" [ref=f33e4]:
+            - /url: https://adclick.g.doubleclick.net/pcs/click?xai=AKAOjstAorSLNNaRpyx1_rUt1YsernwTVmSgOdd0WXSclpFBON6eLXfhhkFyW2Sb9RF23QtFV--QaaFRpy3Gb3E6w_jfTGMBceM2IO1tQfr5lysZqwGPMvb9_oPTv3hrvr7NmIEBW-pheVew6mFSH_RAKpW27q3i6HRCe0pCxWjydysaUWHam-WV3pWkuuc0bHTZv5ddR_voE_2B6JvkwuhGJDY_TA6Dew7UsuxMqjgPUACd6_fvKGq4AI5Dew5AAiwBzkp4w7rgLZETI5pu4gIGzf3lMo7atBEfp78UhdfNkS-JYFUKxjCL6Mj2BIiESt5A3zrL7VbS2TrGTRsWZQghyVGoqHLmJvRHwFNJgvHHAnjAkta-SAV3MiEY0HwZrUD74eihBAlQAMks-Zki8GMmvqrh906qt_bhcPYd64-uR-G5nC_DBL9jkCdILFiy6EWSAXbjOcCX5C1JJeeDpKUOzgkLBOKuu9IQLFGT9WQs9F5Do_Ap2T3BT9mlzI6I2eJruIMGrjiUkJYmsS7MM2HU-4QBzmmNnMiFDDlm5OTf5NjgLuN3et9mFec_qyKDLnof2zdD2OzGIac4SHz7mhqJJkA1MobvnL_y-bd8sK8sQfHq9id-4hucFFqvKnh5gX5PUs6_D49756OUH_B_IT-ZnXEZwxkmg7ryBrWXNlTCZwfAVbq61GneyD4LFYJyF4hfVbe-fY31C5pbJHeQY31yZiVv-68WBu_5eSFYnBQRZFmL_0L3Bb9TZWIr17oWxC76l3zV-5ibskICymccznxf8SYZ-zie7GMJZJSkeWSl86d9tDUThhcv3kAf-tupB2YvkKoyExeVEvIUMCwvFpmqXtFhDRJGaoZNhPQEUkyaqbisGho8sgUdL_g8-9SsYQq6nv7D3OyR5nAxJN4PWAxdpR85hWE51mRJmCjNIs5i8rSs3z9eSs4OoZLsCAmUe_qR4bjGwfyPneKIvGdYrrCpCy1AROb8zNvtOmcMMkz-Mf3GrV6nXcr7zQpgS6C2Jhi-vly8l6tS5xVdmfZJZjG83bLvhQ-kTCSUVqI8OIM7QRF9VC1kjEjIFy5-ukwjR2udee3roHW49g7hkY8AdFkSoPqSK9KZ6t-SiY6BOePzk7V7beWdyLD0yG_H4E3Vo7kibKWM_jR9puOZSzAivQqcJWHhQYpL0yF_AZc9hM4ow4T9c7Vd2N-nlsfjW7TI9LWcrsd1g778UD7e75J8BvHseWZG7ZgazW5nmsWKfOq36-ZQ3n0EHZLOmOzDcNZ49ZpukbxzQ5RJkSSaltROR8kQh9ESWbqUCFQ3pi7APQnNm8X700Ml4V8YbxShwZxhXL96gSBApqVjj8zfNitTGzic02_yqt-rLyzzXkWX6B1EQ8nxvFL60uX_3T-7EEd4KYBtVvqrmeLTDOFpUV94INPmleKrnnlBWMQiSRhqRtE2uPKtseNrdjmSo8XHEcRM4WgAv2mKUoE8zKNQPwhSI5oRRRJVy55aeG2SGOrOMWEwhQeKMaGW85oXBgZk2yLX0SwbM6oY4HVZd-1Hg1SB2ndwtcW3x-va7lhQjLenz3uPD6OQPUFtSdazsFIvFpURa1PU0a55OZ5weHVsmmqZtCP9zZINSGaj3dRh7p4HKL153vWI4XWTZ_yYqpw5g3LvA5USB66hv8jpiVdMCmNgNWNgzAUGT1zouE6ZkUy7mMG1ixYLUQ9EO96mnkNAxzpI8azzb6rt4tGtQpfaLjZBQMVN7zj8tIFugOY8Gbba4413YWnYcCcAJ4QFljSU4zBJAAqsb7YJzIUMNSgzWi6Vab5u_NOlXIA-9cQvgWvm9PfE511hmyquDnTeEEyavKkp_cTa6svRLKLFe10maKJmbsFrQkM420eca4Ax_Z8RKMr5X1TfvXJzd2gNI7MTDyfmOkWIRKbnD34KRkn3kmbKtrQzNyPhaQ&sai=AMfl-YT1193u8LKBtvu8Xrfl7fRKJ4akAakCfBU_ibUTd2yHSAbqD2TOGxJye7P-Yx3hmLUq5cDb_LFqeLpxTbWsYJI-BHz3z1LqtHtjBBDrMe3vYJCIeL7FwMN_cJV87JpIkNlk2VDwXLUt8SFyqXU-djH_JVCeKRG01oOSS0LLKm-h0HYguEQ6I8rNxhAyJbrk79Wtb00xddRFykm2NGPu_pPm3f_miIYQhzWCgPg8m9NDWlUJVbDfx7y9H2IEFh_doKMseal28PxogLJjSNheBaHroW9UqzFyq7tJaaGC8b_RZAasZhU0YyOBQBkBHnNGZk7nby3SXpl7KoiBE1t5JxRgO-_vCAVYdcqh3xpJfxq5d2HOpJN4ZdrFqjIyiVkj05UJf-4AUOK-h8JBw_TedoZDQk0KC1UZp0mZ7T2Gi0DC7pNqm8H2FqLOzzRpkOkCo1fyKs8LAJX6zSZanRKU3h9UlJKA6Xk-cgZsrrCQ8QqHLOggvVjIL0ykm29vGV3jYyhrWddaURF_QOm8MvvibUJbkc2zgDybKwa5Hsd6ytdIsAHWmFeCqkvGd0MuTLvbcYt1GSq2iK4-CPe9rZbjUogc_DMWx4B9njXvEGqvnDCydP2pX_8cXvC2MZgSkgyxE1JTA5I7DyLBf4y8fGjbrFPjpGQQiPTXb-s6JqA3rfAciYyIFZRWxW-UNbQoQEYTIPBL3pBMO5YFASAKzHsRiL_BgUTBYJ5lNszgBa9jX1tMmB1imlzAYCnuyRZHaiyHmEoSH2HTXE2TKfVHBGWzt6iWqf6e_uWIwYxtSmbT9mb0xEBUJIVce2m3K7SVDpcCyj6_MLiPdiNtnOMQDnqj85SLNTpNghmWOxmB0xCJdhbCCAiAFhmw33O_J0n1BiKfEjNuzyLfCnc&sig=Cg0ArKJSzNglBDXx2n-Y&cry=1&fbs_aeid=%5Bgw_fbsaeid%5D&urlfix=1&adurl=https://www.fiverr.com%3Futm_source%3Ddv360%26utm_medium%3Ddisplay%26utm_campaign%3Ddv_ge-us_crt-all_dv-desktop-performance%26utm_term%3Ddv_ge-us_display%26utm_content%3Dprogramming-tech-mobile-development-kw%5Emobile-dev-impact-green_728x90%26dclid%3D%25edclid!%26gad_source%3D7%26gad_campaignid%3D23902265231
+            - img "Advertisement" [ref=f33e5]
+          - generic [ref=f33e6]:
+            - generic:
+              - img [ref=f33e10] [cursor=pointer]
+              - button [ref=f33e13] [cursor=pointer]:
+                - img [ref=f33e14]
+```
