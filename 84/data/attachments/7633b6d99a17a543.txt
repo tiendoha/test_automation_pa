@@ -1,0 +1,1 @@
+[PASS] TC-CART-001: Should add 2 products to cart and verify their details  (2026-06-15 06:14:20.024)
