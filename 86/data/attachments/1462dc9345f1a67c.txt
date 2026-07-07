@@ -1,3 +1,0 @@
-[STEP] Sending create account API: POST /api/createAccount for email testuser_8c433b0b@mailtest.com
-[SETUP] beforeAll: existingUser created via API for TC-REG-002  (2026-06-17 05:59:55.238)
-[PASS] TC-REG-001: Should register a new user account successfully  (2026-06-17 06:00:03.036)
