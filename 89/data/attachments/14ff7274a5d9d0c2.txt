@@ -1,2 +1,0 @@
-[STEP] Sending create account API: POST /api/createAccount for email testuser_de7b92ed@mailtest.com
-[STEP] Sending delete account API: DELETE /api/deleteAccount for email testuser_de7b92ed@mailtest.com
