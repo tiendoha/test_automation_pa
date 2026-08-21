@@ -1,0 +1,5 @@
+[STEP] Sending create account API: POST /api/createAccount for email testuser_59e0dfed@mailtest.com
+[SETUP] beforeAll: existingUser created via API for TC-REG-002  (2026-08-21 02:17:22.690)
+[STEP] Sending delete account API: DELETE /api/deleteAccount for email testuser_59e0dfed@mailtest.com
+[INFO] Account testuser_59e0dfed@mailtest.com successfully deleted.
+[INFO] afterAll: existingUser deleted via API
