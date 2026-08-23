@@ -1,4 +1,0 @@
-[PASS] TC-LOGIN-003: Should show error when logging in with non-existent email  (2026-08-03 04:24:09.605)
-[STEP] Sending delete account API: DELETE /api/deleteAccount for email testuser_8b3b26b0@mailtest.com
-[INFO] Account testuser_8b3b26b0@mailtest.com successfully deleted.
-[INFO] afterAll: registeredUser deleted via API
