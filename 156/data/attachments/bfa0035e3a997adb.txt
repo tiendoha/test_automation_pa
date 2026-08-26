@@ -1,0 +1,4 @@
+[PASS] TC-REG-002: Should show error when registering with an existing email  (2026-08-26 02:18:44.510)
+[STEP] Sending delete account API: DELETE /api/deleteAccount for email testuser_af44533c@mailtest.com
+[INFO] Account testuser_af44533c@mailtest.com successfully deleted.
+[INFO] afterAll: existingUser deleted via API
