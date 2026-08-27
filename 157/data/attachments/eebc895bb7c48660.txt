@@ -1,0 +1,1 @@
+[PASS] TC-LOGIN-002: Should show error when logging in with incorrect password  (2026-08-27 10:44:34.953)
