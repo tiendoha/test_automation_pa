@@ -1,0 +1,3 @@
+[STEP] Sending delete account API: DELETE /api/deleteAccount for email testuser_4bd8a7b0@mailtest.com
+[INFO] Account testuser_4bd8a7b0@mailtest.com successfully deleted.
+[INFO] afterAll: registeredUser deleted via API

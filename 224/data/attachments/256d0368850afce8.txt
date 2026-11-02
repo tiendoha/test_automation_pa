@@ -1,0 +1,6 @@
+[STEP] Sending create account API: POST /api/createAccount for email testuser_6381eabf@mailtest.com
+[SETUP] beforeAll: Account created via API  (2026-11-02 06:59:15.748)
+[PASS] TC-LOGIN-003: Should show error when logging in with non-existent email  (2026-11-02 06:59:22.245)
+[STEP] Sending delete account API: DELETE /api/deleteAccount for email testuser_6381eabf@mailtest.com
+[INFO] Account testuser_6381eabf@mailtest.com successfully deleted.
+[INFO] afterAll: registeredUser deleted via API
