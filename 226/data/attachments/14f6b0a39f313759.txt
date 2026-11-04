@@ -1,0 +1,5 @@
+[STEP] Sending create account API: POST /api/createAccount for email testuser_409c17a4@mailtest.com
+[SETUP] beforeAll: Account created via API  (2026-11-04 07:04:38.477)
+[STEP] Sending delete account API: DELETE /api/deleteAccount for email testuser_409c17a4@mailtest.com
+[INFO] Account testuser_409c17a4@mailtest.com successfully deleted.
+[INFO] afterAll: registeredUser deleted via API
