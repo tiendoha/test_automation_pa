@@ -1,0 +1,3 @@
+[STEP] Sending create account API: POST /api/createAccount for email testuser_9d506817@mailtest.com
+[SETUP] beforeAll: Account created via API  (2026-11-05 07:30:49.285)
+[PASS] TC-LOGIN-001: Should login successfully with the newly registered account  (2026-11-05 07:30:53.947)
